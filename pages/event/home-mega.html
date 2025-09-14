@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Todos los MegaEventos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="../../assets/js/config.js"></script>
+</head>
+<body class="bg-gradient-to-br from-brand-profundo via-brand-oscuro to-brand-marino min-h-screen font-sans">
+
+  <!-- ───────── Navbar básico ───────── -->
+  <header class="bg-white/90 backdrop-blur shadow mb-6">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='../home-publico.html'">
+        <img src="../../assets/img/UNI2.png" alt="Logo" class="h-8" />
+        <span class="font-semibold text-lg text-brand-profundo">MegaEventos</span>
+      </div>
+      <button id="logoutBtn" class="text-red-600 hover:underline text-sm">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-4">
+    <!-- Botón "Volver al inicio" -->
+    <button onclick="window.location.href='../home-publico.html'" class="mb-4 text-white hover:underline flex items-center gap-1 text-sm">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      Volver al inicio
+    </button>
+
+    <h1 class="text-white text-2xl font-semibold mb-4 text-center">Lista de MegaEventos</h1>
+    <div id="megaContainer" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <p class="col-span-full text-center text-white/80">Cargando…</p>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = '../home-publico.html';
+        return;
+      }
+
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        localStorage.clear();
+        window.location.href = '../home-publico.html';
+      });
+
+      const megaContainer = document.getElementById('megaContainer');
+
+      function formatDate(fechaISO) {
+        return new Date(fechaISO).toLocaleDateString();
+      }
+
+      async function loadMegaEventos() {
+        megaContainer.innerHTML = '<p class="col-span-full text-center text-white/80">Cargando…</p>';
+        try {
+          const res = await fetch(`${API_BASE_URL}/api/mega-eventos`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          const json = await res.json();
+
+          // 👇 Aquí puedes ver todo lo que devuelve el backend
+          console.log('Respuesta completa del servidor:', json);
+
+          if (!res.ok || !json.success) throw new Error(json.error || 'Error desconocido');
+
+          // También puedes ver específicamente el array de mega eventos
+          console.log('Lista de mega eventos:', json.megaEventos);
+
+          renderMegaCards(json.megaEventos);
+        } catch (err) {
+          console.error('Error al cargar mega eventos:', err);
+          megaContainer.innerHTML =
+            '<p class="col-span-full text-center text-red-300">Error al cargar MegaEventos.</p>';
+        }
+      }
+
+
+
+      function renderMegaCards(arr) {
+        if (!Array.isArray(arr) || arr.length === 0) {
+          megaContainer.innerHTML =
+            '<p class="col-span-full text-center text-white/80"><em>No hay MegaEventos activos.</em></p>';
+          return;
+        }
+
+        megaContainer.innerHTML = '';
+        arr.forEach(ev => {
+          const card = document.createElement('article');
+          card.className = `
+            bg-white/90 rounded-2xl shadow hover:shadow-lg transition
+            overflow-hidden cursor-pointer flex flex-col
+          `;
+
+          // 1) Imagen principal o placeholder
+          const imgSrc = ev.imagenPrincipal?.url
+            ? ev.imagenPrincipal.url
+            : 'https://via.placeholder.com/400x160?text=Sin+imagen';
+          const imgHtml = `
+            <div class="h-40 w-full overflow-hidden">
+              <img src="${imgSrc}"
+                  alt="Imagen de ${ev.titulo}"
+                  class="object-cover w-full h-full"/>
+            </div>`;
+
+          // 2) Datos básicos
+          // Extraigo sólo la primera parte de la dirección (antes de la coma)
+          const direccionCorta = ev.ubicacion.direccion.split(',')[0];
+
+          const bodyHtml = `
+            <div class="p-4 flex-1 flex flex-col">
+              <h3 class="text-brand-profundo font-semibold text-lg mb-1 line-clamp-2">
+                ${ev.titulo}
+              </h3>
+              <p class="text-sm text-gray-700 mb-1">
+                <strong>Ubicación:</strong>
+                ${ev.ubicacion.ciudad}, ${direccionCorta}
+              </p>
+              <p class="text-sm text-gray-700 mb-1">
+                <strong>Categoría:</strong> ${ev.categoria}
+              </p>
+              <p class="text-sm text-gray-700 mt-auto">
+                <strong>Estado:</strong> ${ev.estado}
+              </p>
+            </div>`;
+
+          card.innerHTML = imgHtml + bodyHtml;
+
+          // Ejemplo de click: podrías redirigir
+          card.addEventListener('click', () => {
+            window.location.href =
+              `mega/detalle.html?megaEventoId=${ev._id}`;
+          });
+
+          megaContainer.appendChild(card);
+        });
+       }
+
+      document.addEventListener('DOMContentLoaded', () => loadMegaEventos());
+    })();
+  </script>
+</body>
+</html>

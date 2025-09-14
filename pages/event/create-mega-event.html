@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crear Mega Evento</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary-blue: #145873;
+      --secondary-teal: #24A6A6;
+      --primary-green: #74A629;
+      --light-green: #88BF36;
+      --dark: #0D0D0D;
+      --white: #ffffff;
+      --light-gray: #f8f9fa;
+      --border-gray: #e4e6ea;
+      --text-gray: #65676b;
+      --hover-gray: #f2f3f5;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, var(--light-gray) 0%, #e8f4f8 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      background: var(--white);
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      animation: slideUp 0.6s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .header {
+      background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-teal) 100%);
+      color: var(--white);
+      padding: 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .back-button {
+      position: absolute;
+      left: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.2);
+      color: var(--white);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      padding: 12px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 2;
+    }
+
+    .back-button:hover {
+      background: rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: translateY(-50%) translateX(-3px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .back-button i {
+      font-size: 16px;
+    }
+
+    @media (max-width: 640px) {
+      .back-button {
+        position: static;
+        transform: none;
+        margin-bottom: 16px;
+        align-self: flex-start;
+      }
+      
+      .header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .header-content {
+        text-align: center;
+      }
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      animation: pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.3; }
+      50% { transform: scale(1.1); opacity: 0.1; }
+    }
+
+    .header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .header .subtitle {
+      font-size: 16px;
+      opacity: 0.9;
+      margin-top: 8px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .form-container {
+      padding: 32px;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+      animation: fadeInUp 0.5s ease-out;
+      animation-fill-mode: both;
+    }
+
+    .form-group:nth-child(odd) { animation-delay: 0.1s; }
+    .form-group:nth-child(even) { animation-delay: 0.2s; }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .form-label {
+      display: flex;
+      align-items: center;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
+    .form-label i {
+      margin-right: 8px;
+      color: var(--primary-blue);
+      width: 18px;
+      text-align: center;
+    }
+
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid var(--border-gray);
+      border-radius: 8px;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      background: var(--white);
+      font-family: inherit;
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--secondary-teal);
+      box-shadow: 0 0 0 3px rgba(36, 166, 166, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .form-input:hover, .form-select:hover, .form-textarea:hover {
+      border-color: var(--primary-blue);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 640px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .fieldset {
+      border: 2px solid var(--border-gray);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, var(--light-gray) 0%, rgba(116, 166, 41, 0.03) 100%);
+      transition: all 0.3s ease;
+    }
+
+    .fieldset:hover {
+      border-color: var(--primary-green);
+      box-shadow: 0 4px 12px rgba(116, 166, 41, 0.1);
+    }
+
+    .fieldset-legend {
+      font-weight: 700;
+      color: var(--primary-blue);
+      font-size: 18px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+    }
+
+    .fieldset-legend i {
+      margin-right: 8px;
+      color: var(--primary-green);
+    }
+
+    .dynamic-container {
+      margin-bottom: 16px;
+    }
+
+    .dynamic-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      padding: 12px;
+      background: var(--white);
+      border-radius: 8px;
+      border: 1px solid var(--border-gray);
+      animation: slideInLeft 0.3s ease-out;
+    }
+
+    @keyframes slideInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .dynamic-item input {
+      flex: 1;
+      border: 1px solid var(--border-gray);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .btn-remove {
+      background: #ff6b6b;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 12px;
+    }
+
+    .btn-remove:hover {
+      background: #ff5252;
+      transform: scale(1.05);
+    }
+
+    .btn-add {
+      background: linear-gradient(135deg, var(--primary-green) 0%, var(--light-green) 100%);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .btn-add:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(116, 166, 41, 0.3);
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: var(--light-gray);
+      border-radius: 8px;
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .checkbox-group:hover {
+      background: var(--hover-gray);
+      border-color: var(--primary-blue);
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--secondary-teal);
+      cursor: pointer;
+    }
+
+    .checkbox-group label {
+      cursor: pointer;
+      font-weight: 500;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .file-upload {
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .file-upload input[type="file"] {
+      position: absolute;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    .file-upload-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 20px;
+      border: 2px dashed var(--border-gray);
+      border-radius: 8px;
+      background: var(--light-gray);
+      transition: all 0.3s ease;
+      color: var(--text-gray);
+      font-weight: 500;
+    }
+
+    .file-upload:hover .file-upload-label {
+      border-color: var(--secondary-teal);
+      background: rgba(36, 166, 166, 0.05);
+      color: var(--secondary-teal);
+    }
+
+    .image-preview-container {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 12px;
+    }
+
+    .image-preview {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--white);
+      border: 2px solid var(--border-gray);
+      transition: all 0.3s ease;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    .image-preview:hover {
+      border-color: var(--secondary-teal);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .image-preview img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .image-preview-info {
+      padding: 8px;
+      background: var(--white);
+      border-top: 1px solid var(--border-gray);
+    }
+
+    .image-preview-name {
+      font-size: 12px;
+      color: var(--text-gray);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 4px;
+    }
+
+    .image-preview-size {
+      font-size: 11px;
+      color: var(--primary-blue);
+      font-weight: 500;
+    }
+
+    .image-preview-remove {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 24px;
+      height: 24px;
+      background: rgba(255, 107, 107, 0.9);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      transition: all 0.3s ease;
+      opacity: 0;
+    }
+
+    .image-preview:hover .image-preview-remove {
+      opacity: 1;
+    }
+
+    .image-preview-remove:hover {
+      background: #ff5252;
+      transform: scale(1.1);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .submit-btn {
+      background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-teal) 100%);
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .submit-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .submit-btn:hover::before {
+      left: 100%;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(20, 88, 115, 0.3);
+    }
+
+    .output {
+      margin-top: 24px;
+      padding: 20px;
+      background: var(--dark);
+      color: var(--white);
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      max-height: 300px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary-green), var(--light-green));
+      z-index: 1000;
+      transition: width 0.3s ease;
+    }
+
+    /* Animaciones adicionales */
+    .form-input.error {
+      border-color: #ff6b6b;
+      animation: shake 0.5s ease-in-out;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    .loading {
+      position: relative;
+    }
+
+    .loading::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: 12px;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border-gray);
+      border-top: 2px solid var(--secondary-teal);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      transform: translateY(-50%);
+    }
+
+    @keyframes spin {
+      0% { transform: translateY(-50%) rotate(0deg); }
+      100% { transform: translateY(-50%) rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress-bar" id="progressBar"></div>
+  
+  <div class="container">
+    <div class="header">
+      <a href="javascript:history.back()" class="back-button">
+        <i class="fas fa-chevron-left"></i>
+        Volver
+      </a>
+      <div class="header-content">
+        <h1><i class="fas fa-calendar-plus"></i> Crear Mega Evento</h1>
+        <div class="subtitle">Organiza eventos extraordinarios que marquen la diferencia</div>
+      </div>
+    </div>
+
+    <div class="form-container">
+      <form id="createMegaForm">
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fas fa-heading"></i>
+            Título del Evento
+          </label>
+          <input type="text" name="titulo" class="form-input" placeholder="Ingresa un título impactante..." required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fas fa-align-left"></i>
+            Descripción
+          </label>
+          <textarea name="descripcion" class="form-textarea" placeholder="Describe tu evento de manera atractiva..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-calendar-check"></i>
+              Fecha de Inicio
+            </label>
+            <input type="datetime-local" name="fechaInicio" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-calendar-times"></i>
+              Fecha de Fin
+            </label>
+            <input type="datetime-local" name="fechaFin" class="form-input" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="fechaLimiteInscripcion">
+            <i class="fas fa-clock"></i>
+            Fecha límite de inscripción
+          </label>
+          <input id="fechaLimiteInscripcion" name="fechaLimiteInscripcion" type="date" class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fas fa-map-marker-alt"></i>
+            Ubicación
+          </label>
+          <input type="text" name="ubicacion" class="form-input" placeholder="¿Dónde se realizará?" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-tags"></i>
+              Categoría
+            </label>
+            <select name="categoria" id="categoriaSelect" class="form-select" required>
+              <option value="">Selecciona una categoría</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-users"></i>
+              Capacidad Máxima
+            </label>
+            <input type="number" name="capacidadMaxima" class="form-input" placeholder="Número de participantes">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-handshake"></i>
+              Patrocinadores
+            </label>
+            <select id="patrocinadoresSelect" class="form-select" multiple size="5"></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-medal"></i>
+              Auspiciadores
+            </label>
+            <select id="auspiciadoresSelect" class="form-select" multiple size="5"></select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <div class="checkbox-group">
+              <input type="checkbox" name="requiereAprobacion" id="requiereAprobacion">
+              <label for="requiereAprobacion">
+                <i class="fas fa-check-circle"></i>
+                Requiere Aprobación
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="checkbox-group">
+              <input type="checkbox" name="certificacionDisponible" id="certificacionDisponible">
+              <label for="certificacionDisponible">
+                <i class="fas fa-certificate"></i>
+                Certificación Disponible
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="checkbox-group">
+            <input type="checkbox" name="esPublico" id="esPublico">
+            <label for="esPublico">
+              <i class="fas fa-globe"></i>
+              ¿Es público?
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fas fa-hashtag"></i>
+            Tags
+          </label>
+          <select id="tagsSelect" class="form-select" multiple size="5"></select>
+        </div>
+
+        <div class="fieldset">
+          <div class="fieldset-legend">
+            <i class="fas fa-bullseye"></i>
+            Objetivos del Evento
+          </div>
+          <div id="objetivosContainer" class="dynamic-container"></div>
+          <button type="button" id="addObjetivoBtn" class="btn-add">
+            <i class="fas fa-plus"></i>
+            Añadir objetivo
+          </button>
+        </div>
+
+        <div class="fieldset">
+          <div class="fieldset-legend">
+            <i class="fas fa-chart-line"></i>
+            Resultados Esperados
+          </div>
+          <div id="resultadosContainer" class="dynamic-container"></div>
+          <button type="button" id="addResultadoBtn" class="btn-add">
+            <i class="fas fa-plus"></i>
+            Añadir resultado
+          </button>
+        </div>
+
+        <div class="fieldset">
+          <div class="fieldset-legend">
+            <i class="fas fa-address-book"></i>
+            Información de Contacto
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fas fa-envelope"></i>
+                Email
+              </label>
+              <input type="email" name="contactoInfo[email]" class="form-input" placeholder="contacto@evento.com">
+            </div>
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fas fa-phone"></i>
+                Teléfono
+              </label>
+              <input type="tel" name="contactoInfo[telefono]" class="form-input" placeholder="+1 234 567 8900">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-user"></i>
+              Nombre de Contacto
+            </label>
+            <input type="text" name="contactoInfo[nombre]" class="form-input" placeholder="Persona responsable">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fas fa-images"></i>
+            Imágenes Promocionales
+          </label>
+          <div class="file-upload">
+            <input type="file" name="imagenes" multiple accept="image/*" id="imagenesInput">
+            <div class="file-upload-label">
+              <i class="fas fa-cloud-upload-alt"></i>
+              Arrastra archivos aquí o haz clic para seleccionar
+            </div>
+          </div>
+          <div id="imagePreviewContainer" class="image-preview-container"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fas fa-info-circle"></i>
+            Estado del Evento
+          </label>
+          <select name="estado" id="estadoSelect" class="form-select" required>
+            <option value="">Selecciona el estado</option>
+          </select>
+        </div>
+
+        <button type="submit" class="submit-btn">
+          <i class="fas fa-rocket"></i>
+          Crear Mega Evento
+        </button>
+      </form>
+
+      <pre id="output" class="output" style="display: none;"></pre>
+    </div>
+  </div>
+
+  <!-- Scripts originales mantenidos -->
+  <script src="../../assets/js/config.js"></script>
+  <script src="../../scripts/events/mega/create-mega-event.js"></script>
+
+  <script>
+    // Funcionalidades adicionales
+    document.addEventListener('DOMContentLoaded', function() {
+      // Barra de progreso
+      const form = document.getElementById('createMegaForm');
+      const progressBar = document.getElementById('progressBar');
+      const inputs = form.querySelectorAll('input[required], select[required]');
+      
+      function updateProgress() {
+        let filled = 0;
+        inputs.forEach(input => {
+          if (input.value.trim() !== '') filled++;
+        });
+        const progress = (filled / inputs.length) * 100;
+        progressBar.style.width = progress + '%';
+      }
+      
+      inputs.forEach(input => {
+        input.addEventListener('input', updateProgress);
+        input.addEventListener('change', updateProgress);
+      });
+
+      // Manejo dinámico de objetivos
+      let objetivoCount = 0;
+      document.getElementById('addObjetivoBtn').addEventListener('click', function() {
+        objetivoCount++;
+        const container = document.getElementById('objetivosContainer');
+        const div = document.createElement('div');
+        div.className = 'dynamic-item';
+        div.innerHTML = `
+          <input type="text" name="objetivos[]" placeholder="Describe un objetivo específico..." required>
+          <button type="button" class="btn-remove" onclick="this.parentElement.remove()">
+            <i class="fas fa-times"></i>
+          </button>
+        `;
+        container.appendChild(div);
+      });
+
+      // Manejo dinámico de resultados
+      let resultadoCount = 0;
+      document.getElementById('addResultadoBtn').addEventListener('click', function() {
+        resultadoCount++;
+        const container = document.getElementById('resultadosContainer');
+        const div = document.createElement('div');
+        div.className = 'dynamic-item';
+        div.innerHTML = `
+          <input type="text" name="resultados[]" placeholder="Describe un resultado esperado..." required>
+          <button type="button" class="btn-remove" onclick="this.parentElement.remove()">
+            <i class="fas fa-times"></i>
+          </button>
+        `;
+        container.appendChild(div);
+      });
+
+      // Validación en tiempo real
+      inputs.forEach(input => {
+        input.addEventListener('blur', function() {
+          if (this.hasAttribute('required') && !this.value.trim()) {
+            this.classList.add('error');
+          } else {
+            this.classList.remove('error');
+          }
+        });
+      });
+
+      // Efecto de carga en el submit
+      form.addEventListener('submit', function(e) {
+        const submitBtn = form.querySelector('.submit-btn');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creando evento...';
+        submitBtn.disabled = true;
+        
+        // Simular proceso (esto se maneja en tu script original)
+        setTimeout(() => {
+          submitBtn.innerHTML = '<i class="fas fa-rocket"></i> Crear Mega Evento';
+          submitBtn.disabled = false;
+        }, 3000);
+      });
+
+      // Animación de entrada escalonada
+      const formGroups = document.querySelectorAll('.form-group');
+      formGroups.forEach((group, index) => {
+        group.style.animationDelay = (index * 0.1) + 's';
+      });
+
+      // Manejo de archivos con preview
+      const fileInput = document.querySelector('input[type="file"]');
+      const fileLabel = document.querySelector('.file-upload-label');
+      const previewContainer = document.getElementById('imagePreviewContainer');
+      let selectedFiles = [];
+      
+      fileInput.addEventListener('change', function() {
+        const files = Array.from(this.files);
+        selectedFiles = [...selectedFiles, ...files];
+        updateImagePreviews();
+        updateFileLabel();
+      });
+
+      function updateImagePreviews() {
+        previewContainer.innerHTML = '';
+        
+        selectedFiles.forEach((file, index) => {
+          if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              const previewDiv = document.createElement('div');
+              previewDiv.className = 'image-preview';
+              
+              previewDiv.innerHTML = `
+                <img src="${e.target.result}" alt="${file.name}">
+                <button type="button" class="image-preview-remove" onclick="removeImage(${index})">
+                  <i class="fas fa-times"></i>
+                </button>
+                <div class="image-preview-info">
+                  <div class="image-preview-name">${file.name}</div>
+                  <div class="image-preview-size">${formatFileSize(file.size)}</div>
+                </div>
+              `;
+              
+              previewContainer.appendChild(previewDiv);
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+      }
+
+      function updateFileLabel() {
+        if (selectedFiles.length > 0) {
+          fileLabel.innerHTML = `
+            <i class="fas fa-images" style="color: var(--primary-green);"></i>
+            ${selectedFiles.length} imagen(es) seleccionada(s) - Haz clic para agregar más
+          `;
+        } else {
+          fileLabel.innerHTML = `
+            <i class="fas fa-cloud-upload-alt"></i>
+            Arrastra archivos aquí o haz clic para seleccionar
+          `;
+        }
+      }
+
+      function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+      }
+
+      // Función global para remover imágenes
+      window.removeImage = function(index) {
+        selectedFiles.splice(index, 1);
+        updateImagePreviews();
+        updateFileLabel();
+        
+        // Actualizar el input de archivos
+        const dt = new DataTransfer();
+        selectedFiles.forEach(file => dt.items.add(file));
+        fileInput.files = dt.files;
+      };
+
+      // Drag and drop functionality
+      const fileUpload = document.querySelector('.file-upload');
+      
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        fileUpload.addEventListener(eventName, preventDefaults, false);
+      });
+
+      function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+        fileUpload.addEventListener(eventName, highlight, false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        fileUpload.addEventListener(eventName, unhighlight, false);
+      });
+
+      function highlight(e) {
+        fileUpload.classList.add('drag-over');
+        fileLabel.style.borderColor = 'var(--secondary-teal)';
+        fileLabel.style.background = 'rgba(36, 166, 166, 0.1)';
+      }
+
+      function unhighlight(e) {
+        fileUpload.classList.remove('drag-over');
+        fileLabel.style.borderColor = 'var(--border-gray)';
+        fileLabel.style.background = 'var(--light-gray)';
+      }
+
+      fileUpload.addEventListener('drop', handleDrop, false);
+
+      function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = Array.from(dt.files);
+        
+        const imageFiles = files.filter(file => file.type.startsWith('image/'));
+        if (imageFiles.length > 0) {
+          selectedFiles = [...selectedFiles, ...imageFiles];
+          updateImagePreviews();
+          updateFileLabel();
+          
+          // Actualizar el input de archivos
+          const dataTransfer = new DataTransfer();
+          selectedFiles.forEach(file => dataTransfer.items.add(file));
+          fileInput.files = dataTransfer.files;
+        }
+      }
+
+      // Inicializar campos con animación
+      updateProgress();
+    });
+  </script>
+</body>
+</html>

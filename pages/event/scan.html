@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Check-In Evento</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="../../assets/js/config.js"></script>
+  <script defer src="../../scripts/events/scan.js"></script>
+  
+  <style>
+    :root {
+      --primary-blue: #145873;
+      --secondary-teal: #24A6A6;
+      --primary-green: #74A629;
+      --light-green: #88BF36;
+      --dark: #0D0D0D;
+      --white: #ffffff;
+    }
+
+    /* Animaciones */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(116, 166, 41, 0.4);
+      }
+      50% {
+        box-shadow: 0 0 0 10px rgba(116, 166, 41, 0);
+      }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      33% { transform: translateY(-10px) rotate(1deg); }
+      66% { transform: translateY(5px) rotate(-1deg); }
+    }
+
+    /* Fondo mejorado */
+    body {
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(20, 88, 115, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(36, 166, 166, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(116, 166, 41, 0.05) 0%, transparent 50%);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* Elementos flotantes */
+    .floating-element {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--secondary-teal), var(--primary-blue));
+      opacity: 0.1;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .floating-element:nth-child(1) {
+      top: 10%;
+      left: 10%;
+      animation-delay: 0s;
+    }
+
+    .floating-element:nth-child(2) {
+      top: 20%;
+      right: 15%;
+      animation-delay: 2s;
+    }
+
+    .floating-element:nth-child(3) {
+      bottom: 20%;
+      left: 20%;
+      animation-delay: 4s;
+    }
+
+    .floating-element:nth-child(4) {
+      bottom: 30%;
+      right: 10%;
+      animation-delay: 1s;
+    }
+
+    /* Container principal */
+    .main-container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(20, 88, 115, 0.1);
+      animation: fadeInUp 0.8s ease-out;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .main-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-blue), var(--secondary-teal), var(--primary-green));
+      background-size: 200% 200%;
+      animation: gradientShift 3s ease infinite;
+    }
+
+    /* Header del formulario */
+    .form-header {
+      text-align: center;
+      margin-bottom: 32px;
+      position: relative;
+    }
+
+    .form-title {
+      font-size: 28px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary-blue), var(--secondary-teal));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .form-subtitle {
+      color: #64748b;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .form-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 25px rgba(116, 166, 41, 0.3);
+      animation: pulse 3s infinite;
+    }
+
+    /* Input mejorado */
+    .enhanced-input {
+      width: 100%;
+      padding: 16px 20px;
+      border: 2px solid rgba(20, 88, 115, 0.15);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--dark);
+      font-size: 16px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      margin-bottom: 24px;
+    }
+
+    .enhanced-input:focus {
+      outline: none;
+      border-color: var(--secondary-teal);
+      background: white;
+      box-shadow: 
+        0 0 0 4px rgba(36, 166, 166, 0.1),
+        0 8px 25px rgba(36, 166, 166, 0.15);
+      transform: translateY(-2px) scale(1.01);
+    }
+
+    .enhanced-input::placeholder {
+      color: #94a3b8;
+    }
+
+    /* Checkbox mejorado */
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      background: rgba(248, 250, 252, 0.8);
+      border-radius: 16px;
+      border: 2px solid rgba(20, 88, 115, 0.1);
+      margin-bottom: 24px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .checkbox-container:hover {
+      background: rgba(36, 166, 166, 0.05);
+      border-color: var(--secondary-teal);
+      transform: translateY(-1px);
+    }
+
+    .enhanced-checkbox {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--secondary-teal);
+      border-radius: 6px;
+      background: white;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .enhanced-checkbox:checked {
+      background: var(--primary-green);
+      border-color: var(--primary-green);
+    }
+
+    .enhanced-checkbox:checked::after {
+      content: '✓';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .checkbox-label {
+      color: var(--dark);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Mensaje */
+    .message-area {
+      text-align: center;
+      min-height: 24px;
+      margin-bottom: 24px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    /* Botón mejorado */
+    .enhanced-button {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+      border: none;
+      border-radius: 16px;
+      color: white;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: 700;
+      padding: 18px 24px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 8px 25px rgba(116, 166, 41, 0.3);
+    }
+
+    .enhanced-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.6s ease;
+    }
+
+    .enhanced-button:hover::before {
+      left: 100%;
+    }
+
+    .enhanced-button:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 12px 35px rgba(116, 166, 41, 0.4);
+      background: linear-gradient(135deg, var(--light-green), var(--primary-green));
+    }
+
+    .enhanced-button:active {
+      transform: translateY(-1px) scale(1.01);
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .main-container {
+        margin: 16px;
+        padding: 24px;
+      }
+      
+      .form-title {
+        font-size: 24px;
+      }
+      
+      .form-icon {
+        width: 60px;
+        height: 60px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Elementos flotantes decorativos -->
+  <div class="floating-element"></div>
+  <div class="floating-element"></div>
+  <div class="floating-element"></div>
+  <div class="floating-element"></div>
+
+  <div class="min-h-screen flex items-center justify-center p-4">
+    <form id="checkInForm" class="main-container p-8 w-full max-w-md">
+      
+      <!-- Header del formulario -->
+      <div class="form-header">
+        <div class="form-icon">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="white">
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <h1 class="form-title">Check-In Evento</h1>
+        <p class="form-subtitle">Confirma tu asistencia al evento</p>
+      </div>
+
+      <!-- Campo de email -->
+      <div>
+        <input type="email" 
+               id="email" 
+               placeholder="Ingresa tu correo electrónico" 
+               required
+               class="enhanced-input" />
+      </div>
+
+      <!-- Checkbox de confirmación -->
+      <label class="checkbox-container">
+        <input type="checkbox" id="asiste" class="enhanced-checkbox" />
+        <span class="checkbox-label">Confirmo mi asistencia al evento</span>
+      </label>
+
+      <!-- Área de mensajes -->
+      <div id="msg" class="message-area"></div>
+
+      <!-- Botón de envío -->
+      <button type="submit" class="enhanced-button">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="display: inline; margin-right: 8px;">
+          <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z"/>
+        </svg>
+        Confirmar Asistencia
+      </button>
+      
+    </form>
+  </div>
+
+  <!-- Script para animaciones adicionales -->
+  <script>
+    // Animación de entrada progresiva
+    document.addEventListener('DOMContentLoaded', function() {
+      const elements = document.querySelectorAll('.enhanced-input, .checkbox-container, .enhanced-button');
+      elements.forEach((element, index) => {
+        element.style.opacity = '0';
+        element.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+          element.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+          element.style.opacity = '1';
+          element.style.transform = 'translateY(0)';
+        }, index * 200 + 500);
+      });
+    });
+
+    // Efectos adicionales en el checkbox
+    document.getElementById('asiste').addEventListener('change', function() {
+      const container = this.closest('.checkbox-container');
+      if (this.checked) {
+        container.style.background = 'rgba(116, 166, 41, 0.1)';
+        container.style.borderColor = 'var(--primary-green)';
+      } else {
+        container.style.background = 'rgba(248, 250, 252, 0.8)';
+        container.style.borderColor = 'rgba(20, 88, 115, 0.1)';
+      }
+    });
+  </script>
+</body>
+</html>

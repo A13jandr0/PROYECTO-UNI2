@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>UNI2 • Detalle de evento</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Config global -->
+  <script src="../../assets/js/config.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+
+
+  <style>
+    .stat-card {
+      background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
+      backdrop-filter: blur(10px);
+    }
+  </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-blue-900 to-indigo-800 text-gray-800 font-sans">
+
+  <!-- Barra superior fija -->
+  <header class="bg-white/90 backdrop-blur-sm shadow-md sticky top-0 z-20">
+    <div class="max-w-5xl mx-auto flex items-center gap-4 px-4 py-3">
+      <button id="volverBtn"
+              class="rounded-full bg-cyan-500 hover:bg-cyan-600 text-white w-9 h-9 grid place-content-center shadow transition-all">
+        ←
+      </button>
+      <h1 id="pageTitle" class="flex-1 font-bold text-lg truncate">Detalle del evento</h1>
+      <div id="actions" class="flex items-center gap-2"></div>
+    </div>
+  </header>
+
+  <!-- Contenido -->
+  <main class="max-w-5xl mx-auto p-4 space-y-6">
+    <!-- Galería + datos -->
+    <section id="detalleContainer"
+             class="bg-white/90 rounded-3xl shadow-xl p-6 md:p-8 space-y-4">
+      <p class="text-center text-gray-500">Cargando detalle…</p>
+    </section>
+
+    <!-- Sección de Banners Publicitarios (inicialmente oculta) -->
+  <section id="banner-container" class="hidden bg-white/90 rounded-3xl shadow-xl p-6 md:p-8 space-y-4">
+    <h2 class="text-2xl font-bold mb-4 text-cyan-700">Esta con Nosotros</h2>
+    <div id="banner-list" class="flex flex-wrap gap-4 justify-center"></div>
+  </section>
+
+
+     <!-- Sección de invitados especiales (inicialmente oculta) -->
+     <section id="inv-container" class="hidden bg-white/90 rounded-3xl shadow-xl p-6 md:p-8 space-y-4">
+      <h2 class="text-2xl font-bold mb-4 text-cyan-700">Invitados Especiales</h2>
+      <p id="inv-loading" class="text-gray-500">Cargando invitados…</p>
+      <div id="inv-list" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"></div>
+    </section>
+
+    <!-- Sección de estadísticas (inicialmente oculta) -->
+    <section id="stats-container" class="hidden">
+      <!-- Se llenará dinámicamente -->
+    </section>
+    
+  </main>
+
+  <!-- Script principal unificado -->
+   <script type="module" src="../../scripts/events/detalle-evento.js"></script>
+
+</body>
+</html>

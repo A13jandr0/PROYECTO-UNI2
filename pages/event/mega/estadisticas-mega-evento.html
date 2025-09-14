@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Estadísticas Mega-Evento</title>
+
+  <!-- Tailwind + estilos globales -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../../../assets/css/styles.css" />
+
+  <!-- Config (API_BASE_URL) -->
+  <script src="../../../assets/js/config.js"></script>
+  <!-- Script de estadísticas -->
+  <script defer src="../../../scripts/events/mega/estadisticas-mega-evento.js"></script>
+</head>
+<body class="bg-gradient-to-br from-brand-profundo via-brand-oscuro to-brand-marino min-h-screen font-sans p-6 text-brand-profundo">
+
+  <!-- Navbar básico -->
+  <header class="mb-6">
+    <a href="../../home-ong.html" class="text-white hover:underline">&larr; Volver</a>
+  </header>
+
+  <main class="max-w-3xl mx-auto bg-white/90 backdrop-blur-lg rounded-2xl shadow-2xl p-6 space-y-6">
+    <h1 id="titulo" class="text-3xl font-bold text-center">Cargando estadísticas…</h1>
+    <div id="statsContainer" class="space-y-8"></div>
+  </main>
+
+</body>
+</html>

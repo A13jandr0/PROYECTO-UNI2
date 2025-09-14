@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>UNI2 • Crear evento</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  
+  <style>
+    #map { height: 280px; }
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* Animaciones */
+    .fade-in {
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .slide-up {
+      animation: slideUp 0.4s ease-out;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Custom brand colors */
+    .bg-brand-primary { background-color: #145873; }
+    .bg-brand-secondary { background-color: #24A6A6; }
+    .bg-brand-accent1 { background-color: #74A629; }
+    .bg-brand-accent2 { background-color: #88BF36; }
+    .bg-brand-dark { background-color: #0D0D0D; }
+    
+    .text-brand-primary { color: #145873; }
+    .text-brand-secondary { color: #24A6A6; }
+    .text-brand-accent1 { color: #74A629; }
+    .text-brand-accent2 { color: #88BF36; }
+    .text-brand-dark { color: #0D0D0D; }
+
+    .border-brand-primary { border-color: #145873; }
+    .border-brand-secondary { border-color: #24A6A6; }
+
+    /* Input focus states */
+    .form-input:focus {
+      border-color: #24A6A6;
+      box-shadow: 0 0 0 3px rgba(36, 166, 166, 0.1);
+    }
+
+    /* Card hover effects */
+    .card-hover {
+      transition: all 0.3s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Upload area animation */
+    .upload-area {
+      transition: all 0.3s ease;
+    }
+    .upload-area:hover {
+      border-color: #24A6A6;
+      background-color: #f0fdfa;
+    }
+
+    /* Progress bar */
+    .progress-bar {
+      background: linear-gradient(90deg, #145873, #24A6A6, #74A629);
+      background-size: 200% 100%;
+      animation: progressShine 2s ease-in-out infinite;
+    }
+
+    @keyframes progressShine {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+  </style>
+</head>
+
+<body class="min-h-screen bg-gray-100 text-gray-900 font-sans">
+
+  <!-- Header estilo Facebook -->
+  <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <button onclick="history.back()" 
+                  class="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200 group">
+            <svg class="w-6 h-6 text-gray-600 group-hover:text-brand-secondary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+          </button>
+          
+          <div>
+            <h1 class="text-xl font-semibold text-brand-dark">Crear evento</h1>
+            <p class="text-sm text-gray-500">Comparte tu evento con la comunidad</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+
+          <button type="submit" form="createEventJsonForm"
+                  class="px-6 py-2 bg-brand-secondary hover:bg-opacity-90 text-white rounded-lg transition-all duration-200 font-medium shadow-sm hover:shadow">
+            Publicar evento
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main class="max-w-4xl mx-auto px-4 py-6">
+    <form id="createEventJsonForm" class="space-y-6" enctype="multipart/form-data">
+
+      <!-- Card: Información básica -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 card-hover fade-in">
+        <div class="p-6">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-brand-secondary rounded-full flex items-center justify-center">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-lg font-semibold text-brand-dark">Información básica</h2>
+              <p class="text-sm text-gray-500">Datos principales de tu evento</p>
+            </div>
+          </div>
+
+          <div class="space-y-5">
+            <div>
+              <label for="titulo" class="block text-sm font-medium text-gray-700 mb-2">
+                Título del evento *
+              </label>
+              <input id="titulo" required
+                     placeholder="¿Cómo se llama tu evento?"
+                     class="w-full rounded-lg border border-gray-300 px-4 py-3 form-input transition-all duration-200 placeholder-gray-400">
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Imágenes promocionales
+              </label>
+              <label for="imagenesPromocionales" class="upload-area flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 px-6 py-8 text-center cursor-pointer">
+                <div class="w-16 h-16 bg-brand-secondary bg-opacity-10 rounded-full flex items-center justify-center">
+                  <svg class="h-8 w-8 text-brand-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.9-7.9A5 5 0 1115.9 6h.1a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                  </svg>
+                </div>
+                <div>
+                  <p class="text-base font-medium text-gray-700">Arrastra tus imágenes aquí</p>
+                  <p class="text-sm text-gray-500 mt-1">o haz clic para seleccionar archivos</p>
+                  <p class="text-xs text-gray-400 mt-2">PNG, JPG hasta 10MB cada una</p>
+                </div>
+                <input id="imagenesPromocionales" name="imagenesPromocionales" type="file" accept="image/*" multiple class="hidden">
+              </label>
+              <div id="previewContainer" class="mt-4 flex flex-wrap gap-3"></div>
+            </div>
+
+            <div>
+              <label for="descripcion" class="block text-sm font-medium text-gray-700 mb-2">
+                Descripción
+              </label>
+              <textarea id="descripcion" rows="4"
+                        placeholder="Describe tu evento, qué van a aprender los asistentes, qué actividades habrá..."
+                        class="w-full rounded-lg border border-gray-300 px-4 py-3 form-input transition-all duration-200 resize-none placeholder-gray-400"></textarea>
+            </div>
+
+            <div class="grid gap-5 sm:grid-cols-2">
+              <div>
+                <label for="fechaInicio" class="block text-sm font-medium text-gray-700 mb-2">
+                  Fecha y hora de inicio *
+                </label>
+                <input id="fechaInicio" type="datetime-local" required
+                       class="w-full rounded-lg border border-gray-300 px-4 py-3 form-input transition-all duration-200">
+              </div>
+              <div>
+                <label for="fechaFinal" class="block text-sm font-medium text-gray-700 mb-2">
+                  Fecha y hora de finalización
+                </label>
+                <input id="fechaFinal" type="datetime-local"
+                       class="w-full rounded-lg border border-gray-300 px-4 py-3 form-input transition-all duration-200">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card: Ubicación -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 card-hover slide-up">
+        <div class="p-6">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-brand-accent1 rounded-full flex items-center justify-center">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-lg font-semibold text-brand-dark">Ubicación del evento</h2>
+              <p class="text-sm text-gray-500">Selecciona dónde se realizará</p>
+            </div>
+          </div>
+
+          <div class="space-y-5">
+            <div class="bg-gray-50 rounded-lg p-4 border-l-4 border-brand-accent1">
+              <p class="text-sm text-gray-600">
+                <span class="font-medium">💡 Tip:</span> Haz clic en el mapa para marcar la ubicación exacta de tu evento
+              </p>
+            </div>
+
+            <div id="map" class="rounded-xl shadow-sm ring-1 ring-gray-200 overflow-hidden"></div>
+
+            <input type="hidden" id="lat" name="lat">
+            <input type="hidden" id="lng" name="lng">
+
+            <div>
+              <label for="locacion" class="block text-sm font-medium text-gray-700 mb-2">
+                Dirección
+              </label>
+              <input id="locacion" required readonly
+                    placeholder="La dirección aparecerá cuando selecciones una ubicación en el mapa"
+                    class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 transition-all duration-200 placeholder-gray-400">
+              
+              <!-- Indicador de ciudad detectada -->
+              <p id="ciudadInfo" class="mt-2 text-sm text-gray-600 font-medium"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card: Detalles del evento -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 card-hover slide-up">
+        <div class="p-6">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-brand-primary rounded-full flex items-center justify-center">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-lg font-semibold text-brand-dark">Detalles del evento</h2>
+              <p class="text-sm text-gray-500">Configuración y características</p>
+            </div>
+          </div>
+
+          <div class="space-y-5">
+            <div class="grid gap-5 sm:grid-cols-2">
+              <div>
+                <label for="tipoEvento" class="block text-sm font-medium text-gray-700 mb-2">
+                  Tipo de evento *
+                </label>
+                <select id="tipoEvento" required
+                        class="w-full rounded-lg border border-gray-300 px-4 py-3 form-input transition-all duration-200">
+                  <option value="" disabled selected>Selecciona una categoría</option>
+                  <option value="conferencia">🎤 Conferencia</option>
+                  <option value="taller">🛠️ Taller</option>
+                  <option value="seminario">📚 Seminario</option>
+                  <option value="capacitacion">🎓 Capacitación</option>
+                  <option value="voluntariado">🤝 Voluntariado</option>
+                  <option value="cultural">🎭 Cultural</option>
+                  <option value="deportivo">⚽ Deportivo</option>
+                  <option value="otro">📋 Otro</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="capacidadMaxima" class="block text-sm font-medium text-gray-700 mb-2">
+                  Capacidad máxima
+                </label>
+                <input id="capacidadMaxima" type="number" min="1" placeholder="Ej: 100"
+                       class="w-full rounded-lg border border-gray-300 px-4 py-3 form-input transition-all duration-200 placeholder-gray-400">
+              </div>
+
+              <div>
+                <label for="estado" class="block text-sm font-medium text-gray-700 mb-2">
+                  Estado del evento
+                </label>
+                <select id="estado"
+                        class="w-full rounded-lg border border-gray-300 px-4 py-3 form-input transition-all duration-200">
+                  <option value="borrador">📝 Borrador</option>
+                  <option value="publicado">✅ Publicado</option>
+                  <option value="cancelado">❌ Cancelado</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="fechaLimiteInscripcion" class="block text-sm font-medium text-gray-700 mb-2">
+                  Límite para inscribirse
+                </label>
+                <input id="fechaLimiteInscripcion" type="datetime-local"
+                       class="w-full rounded-lg border border-gray-300 px-4 py-3 form-input transition-all duration-200">
+              </div>
+            </div>
+
+            <div class="bg-gray-50 rounded-lg p-4">
+              <label class="flex items-center gap-3">
+                <input id="inscripcionAbierta" type="checkbox" checked
+                       class="h-5 w-5 text-brand-secondary rounded border-gray-300 focus:ring-brand-secondary focus:ring-2">
+                <div>
+                  <span class="text-sm font-medium text-gray-700">Inscripción abierta</span>
+                  <p class="text-xs text-gray-500 mt-1">Los usuarios podrán inscribirse automáticamente</p>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card: Empresas -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 card-hover slide-up">
+        <div class="p-6">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-brand-accent2 rounded-full flex items-center justify-center">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-lg font-semibold text-brand-dark">Empresas colaboradoras</h2>
+              <p class="text-sm text-gray-500">Patrocinadores y auspiciadores</p>
+            </div>
+          </div>
+
+          <div class="space-y-6">
+            <div>
+              <h3 class="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
+                <span class="w-2 h-2 bg-brand-secondary rounded-full"></span>
+                Patrocinadores
+              </h3>
+              <div id="patrocinadoresBox" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-brand-secondary transition-colors cursor-pointer">
+                  <svg class="w-8 h-8 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                  </svg>
+                  <p class="text-sm text-gray-500">Agregar patrocinador</p>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 class="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
+                <span class="w-2 h-2 bg-brand-accent1 rounded-full"></span>
+                Auspiciadores
+              </h3>
+              <div id="auspiciadoresBox" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-brand-accent1 transition-colors cursor-pointer">
+                  <svg class="w-8 h-8 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                  </svg>
+                  <p class="text-sm text-gray-500">Agregar auspiciador</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+            <!-- Card: Invitados -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 card-hover slide-up">
+        <div class="p-6">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-brand-accent2 rounded-full flex items-center justify-center">
+              <!-- icono de invitado -->
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M5.121 17.804A8.966 8.966 0 0112 15c2.02 0 3.897.62 5.379 1.687M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-lg font-semibold text-brand-dark">Invitados</h2>
+              <p class="text-sm text-gray-500">Selecciona los invitados al evento</p>
+            </div>
+          </div>
+
+          <div id="invitadosBox" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <!-- aquí cargaremos dinámicamente las cards de invitados -->
+            <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-brand-accent2 transition-colors cursor-pointer">
+              <svg class="w-8 h-8 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+              </svg>
+              <p class="text-sm text-gray-500">Cargando invitados…</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Progress indicator -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm font-medium text-gray-700">Progreso del formulario</span>
+          <span id="progressText" class="text-sm text-brand-secondary">0%</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2">
+          <div id="progressBar" class="progress-bar h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Mensaje de resultado -->
+      <div id="result" class="text-center"></div>
+    </form>
+  </main>
+
+  <!-- Modal de confirmación -->
+  <div id="confirmModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 transform transition-all duration-300">
+      <div class="text-center">
+        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">¡Evento creado exitosamente!</h3>
+        <p class="text-gray-600 mb-6">Tu evento ha sido publicado y ya está disponible para los usuarios.</p>
+        <div class="flex gap-3">
+          <button onclick="closeModal()" class="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+            Cerrar
+          </button>
+          <button onclick="viewEvent()" class="flex-1 px-4 py-2 bg-brand-secondary hover:bg-opacity-90 text-white rounded-lg transition-colors">
+            Ver evento
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="../../assets/js/config.js"></script>
+  
+  <script>
+    // Progress tracking
+    function updateProgress() {
+      const form = document.getElementById('createEventJsonForm');
+      const inputs = form.querySelectorAll('input[required], select[required], textarea[required]');
+      let filled = 0;
+      
+      inputs.forEach(input => {
+        if (input.value.trim() !== '') filled++;
+      });
+      
+      const percentage = Math.round((filled / inputs.length) * 100);
+      document.getElementById('progressBar').style.width = percentage + '%';
+      document.getElementById('progressText').textContent = percentage + '%';
+    }
+
+    // Image preview functionality
+    function setupImagePreview() {
+      const input = document.getElementById('imagenesPromocionales');
+      const preview = document.getElementById('previewContainer');
+      
+      input.addEventListener('change', function(e) {
+        preview.innerHTML = '';
+        
+        Array.from(e.target.files).forEach((file, index) => {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const div = document.createElement('div');
+            div.className = 'relative group';
+            div.innerHTML = `
+              <img src="${e.target.result}" class="w-24 h-24 object-cover rounded-lg shadow-sm">
+              <button type="button" onclick="removeImage(${index})" 
+                      class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                ×
+              </button>
+            `;
+            preview.appendChild(div);
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+    }
+
+    function removeImage(index) {
+      // Logic to remove image
+      updateProgress();
+    }
+
+    function saveDraft() {
+      // Logic to save as draft
+      alert('Borrador guardado exitosamente');
+    }
+
+    function closeModal() {
+      document.getElementById('confirmModal').classList.add('hidden');
+    }
+
+    function viewEvent() {
+      // Redirect to event view
+      window.location.href = '../event/home-publico.html';
+    }
+
+    // Initialize everything
+    document.addEventListener('DOMContentLoaded', function() {
+      setupImagePreview();
+      
+      // Add event listeners for progress tracking
+      const form = document.getElementById('createEventJsonForm');
+      form.addEventListener('input', updateProgress);
+      form.addEventListener('change', updateProgress);
+      
+      // Initial progress calculation
+      updateProgress();
+      
+      // Animate cards on scroll
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.style.animationDelay = '0.1s';
+            entry.target.classList.add('slide-up');
+          }
+        });
+      });
+      
+      document.querySelectorAll('.card-hover').forEach(card => {
+        observer.observe(card);
+      });
+    });
+  </script>
+  
+  <script defer src="../../scripts/events/create-event.js"></script>
+</body>
+</html>

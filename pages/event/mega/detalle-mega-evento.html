@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Detalle Mega-Evento</title>
+
+  <!-- Tailwind + paleta -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#3883D3',
+            secondary: '#21BFC4',
+            success: '#36C974',
+            light: '#F9F9F9'
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- config.js define API_BASE_URL -->
+  <script src="../../../assets/js/config.js" defer></script>
+  <!-- tu lógica de detalle MEGA -->
+  <script src="../../../scripts/events/mega/detalle-mega-evento.js" defer></script>
+</head>
+<body class="bg-light text-gray-800">
+
+  <!-- Mensajes de error -->
+  <div id="error" class="max-w-3xl mx-auto my-4 p-4 bg-red-100 text-red-700 rounded hidden"></div>
+
+  <!-- Overlay para modales -->
+  <div id="modal-overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50"></div>
+
+  <!-- Header con título -->
+  <header class="bg-white shadow p-6 mb-6">
+    <h1 id="titulo" class="text-3xl font-extrabold text-primary"></h1>
+  </header>
+
+  <!-- Contenedor principal -->
+  <main id="detail" class="max-w-5xl mx-auto space-y-6 pb-12"></main>
+
+</body>
+</html>

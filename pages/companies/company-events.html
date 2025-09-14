@@ -1,0 +1,40 @@
+<!-- company-events.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mis Eventos • Empresa</title>
+
+  <!-- Tailwind (prototipo) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="../assets/js/tailwind-global.js"></script>
+  <link rel="stylesheet" href="../assets/css/styles.css" />
+
+  <script src="../assets/js/config.js"></script>
+  <script defer src="../scripts/company-events.js"></script>
+</head>
+<body class="bg-gradient-to-br from-brand-profundo via-brand-oscuro to-brand-marino min-h-screen font-sans text-brand-profundo">
+
+  <!-- Header mínimo -->
+  <header class="bg-white/90 backdrop-blur shadow">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <img src="../assets/img/UNI2.png" alt="Logo" class="h-10" />
+        <span class="font-semibold text-lg">Mis Eventos • Empresa</span>
+      </div>
+      <button id="logoutBtn" class="text-brand-cian hover:underline">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <!-- Contenedor principal -->
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-2xl font-semibold text-white mb-6 text-center">Eventos donde participo</h1>
+    
+    <!-- Contenedor de tarjetas -->
+    <div id="eventsContainer" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <p class="col-span-full text-center text-white/80">Cargando…</p>
+    </div>
+  </main>
+</body>
+</html>

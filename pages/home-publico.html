@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>UNI2 • Eventos</title>
+
+  <!-- Tailwind + estilos globales -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="../assets/js/tailwind-global.js"></script>
+  <link rel="stylesheet" href="../assets/css/styles.css" />
+
+  <!-- Configuración global (API_BASE_URL, etc.) -->
+  <script src="../assets/js/config.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen font-sans">
+<div id="notification" class="fixed top-4 right-4 p-3 rounded shadow hidden bg-red-100 text-red-800 z-50"></div>
+
+  <!-- ───── Navbar ───── -->
+  <header class="bg-white shadow-lg sticky top-0 z-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 py-3">
+      <div class="flex items-center justify-between">
+        <!-- Logo + Marca -->
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-3">
+            <div class="relative">
+              <img src="../assets/img/UNI2.png" alt="Logo" class="h-12 w-12 object-contain drop-shadow-md hover:scale-105 transition-transform duration-200" />
+              <div class="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-cyan-400 to-green-400 rounded-full animate-pulse"></div>
+            </div>
+            <div class="hidden sm:block">
+              <h1 class="text-xl font-bold bg-gradient-to-r from-cyan-600 to-green-600 bg-clip-text text-transparent">UNI2</h1>
+              <p class="text-xs text-gray-500">Eventos</p>
+            </div>
+          </div>
+          
+          <!-- Buscador central estilo Facebook -->
+          <div class="hidden md:block flex-1 max-w-lg mx-8">
+            <form id="searchForm" class="relative">
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                  </svg>
+                </div>
+                <input id="termino" 
+                       placeholder="Buscar eventos..." 
+                       class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-full bg-gray-50 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200 hover:bg-white hover:shadow-sm" />
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Navegación y Usuario -->
+        <div class="flex items-center gap-6">
+          <!-- Enlaces de navegación -->
+          <nav class="hidden lg:flex items-center gap-6">
+            <a href="event/mis-eventos.html"
+               class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 hover:text-cyan-600 hover:bg-gray-100 rounded-lg transition-all duration-200">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a1 1 0 011-1h6a1 1 0 011 1v4m-9 0h10m-10 0H6a2 2 0 00-2 2v9a2 2 0 002 2h12a2 2 0 002-2V9a2 2 0 00-2-2h-2"></path>
+              </svg>
+              Mis eventos
+            </a>
+          </nav>
+
+          <!-- Perfil y logout -->
+          <div class="flex items-center gap-3">
+            <a id="profileBtn" href="../pages/profile/perfil.html"
+               class="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-full transition-all duration-200 group">
+              <div class="w-8 h-8 bg-gradient-to-r from-cyan-500 to-green-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                <span id="userInitial"></span>
+              </div>
+              <span id="userName" class="hidden sm:block text-sm font-medium text-gray-700 group-hover:text-gray-900"></span>
+            </a>
+            
+            <button id="logoutBtn"
+                    class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all duration-200">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ───── Layout principal ───── -->
+  <div class="max-w-7xl mx-auto px-4 py-6">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      
+      <!-- ───── Sidebar izquierdo ───── -->
+      <div class="hidden lg:block">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-24">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+            </svg>
+            Filtros
+          </h3>
+          
+          <div class="space-y-4">
+            <!-- Selector de tipo de contenido -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Ver</label>
+              <select id="tipoContenido" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
+                <option value="eventos">Eventos</option>
+                <option value="megaeventos">Mega Eventos</option>
+                <option value="todos">Todos</option>
+              </select>
+            </div>
+
+            <!-- Filtro de tipo/categoría (cambia según el contenido) -->
+            <div id="filtroTipoContainer">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de evento</label>
+              <select id="tipo" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
+                <option value="">Todos</option>
+                <option value="cultural">Cultural</option>
+                <option value="deportivo">Deportivo</option>
+                <option value="educativo">Educativo</option>
+                <option value="social">Social</option>
+                <option value="ambiental">Ambiental</option>
+                <option value="tecnologico">Tecnológico</option>
+                <option value="salud">Salud</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Ciudad</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  </svg>
+                </div>
+                <input id="ciudad" 
+                       placeholder="Buscar ciudad..." 
+                       class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-cyan-500 focus:border-transparent" />
+              </div>
+            </div>
+
+            <!-- Filtro de estado para mega eventos -->
+            <div id="filtroEstadoContainer" style="display: none;">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Estado</label>
+              <select id="estadoMega" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
+                <option value="todos">Todos</option>
+                <option value="convocatoria">En Convocatoria</option>
+                <option value="organizacion">En Organización</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ───── Feed principal ───── -->
+      <div class="lg:col-span-2">
+        <!-- Header del feed -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+          <div class="flex items-center justify-between mb-4">
+            <h1 id="feedTitle" class="text-xl font-bold text-gray-900 flex items-center gap-2">
+              <svg class="w-6 h-6 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a1 1 0 011-1h6a1 1 0 011 1v4m-9 0h10m-10 0H6a2 2 0 00-2 2v9a2 2 0 002 2h12a2 2 0 002-2V9a2 2 0 00-2-2h-2"></path>
+              </svg>
+              Eventos disponibles
+            </h1>
+            
+            <!-- Tabs para móvil -->
+            <div class="lg:hidden flex gap-2">
+              <button onclick="cambiarTipoContenido('eventos')" class="tabBtn px-3 py-1 text-sm rounded-lg bg-cyan-500 text-white">Eventos</button>
+              <button onclick="cambiarTipoContenido('megaeventos')" class="tabBtn px-3 py-1 text-sm rounded-lg bg-gray-200 text-gray-700">Mega Eventos</button>
+            </div>
+          </div>
+          
+          <!-- Filtros móviles -->
+          <div class="lg:hidden space-y-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <select id="tipoMobile" class="px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-cyan-500">
+                <option value="">Tipo/Categoría</option>
+              </select>
+              <input id="ciudadMobile" 
+                     placeholder="Ciudad" 
+                     class="px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-cyan-500" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Feed de eventos -->
+        <div id="feed" class="space-y-4">
+          <!-- Los eventos se cargarán aquí dinámicamente -->
+        </div>
+        
+        <div id="sentinel" class="h-1"></div>
+      </div>
+
+      <!-- ───── Sidebar derecho - Stats ───── -->
+      <div class="hidden lg:block">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Estadísticas</h3>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600">Total eventos</span>
+              <span id="totalEventos" class="font-semibold">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600">Mega eventos</span>
+              <span id="totalMegaEventos" class="font-semibold">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600">Mis participaciones</span>
+              <span id="misParticipaciones" class="font-semibold">0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // === CONFIGURACIÓN INICIAL ===
+    const token = localStorage.getItem('token');
+    const nombreActual = localStorage.getItem('nombre_usuario') || '';
+    const tipoUsuario = localStorage.getItem('tipo_usuario') || '';
+    const integranteId = localStorage.getItem('id_usuario') || '';
+    const userId = localStorage.getItem('userId') || '';
+
+    if (!token) {
+      window.location.href = '../index.html';
+      throw new Error('Sin token de autenticación');
+    }
+
+    // Mostrar nombre de usuario
+    document.getElementById('userName').textContent = nombreActual;
+    const inicial = nombreActual.charAt(0).toUpperCase();
+    document.getElementById('userInitial').textContent = inicial;
+
+    // === REFERENCIAS DOM ===
+    const feed = document.getElementById('feed');
+    const sentinel = document.getElementById('sentinel');
+
+    // === ESTADO GLOBAL ===
+    let tipoContenidoActual = 'eventos'; // 'eventos', 'megaeventos', 'todos'
+    let pagina = 1;
+    const limite = 8;
+    let totalPag = Infinity;
+    let loading = false;
+    const participated = new Set();
+    const likedEvents = new Set();
+
+    // === FUNCIONES DE UTILIDAD ===
+    const qs = id => document.getElementById(id)?.value.trim();
+    const fechaL = d => new Date(d).toLocaleDateString();
+
+    function showError(text) {
+      const n = document.getElementById('notification');
+      n.textContent = text;
+      n.classList.remove('hidden');
+      setTimeout(() => n.classList.add('hidden'), 3000);
+    }
+
+    // === CAMBIAR TIPO DE CONTENIDO ===
+    function cambiarTipoContenido(tipo) {
+      tipoContenidoActual = tipo;
+      document.getElementById('tipoContenido').value = tipo;
+      
+      // Actualizar título
+      const titles = {
+        'eventos': 'Eventos disponibles',
+        'megaeventos': 'Mega Eventos',
+        'todos': 'Todos los eventos'
+      };
+      document.getElementById('feedTitle').innerHTML = `
+        <svg class="w-6 h-6 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          ${tipo === 'megaeventos' ? 
+            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>' :
+            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a1 1 0 011-1h6a1 1 0 011 1v4m-9 0h10m-10 0H6a2 2 0 00-2 2v9a2 2 0 002 2h12a2 2 0 002-2V9a2 2 0 00-2-2h-2"></path>'
+          }
+        </svg>
+        ${titles[tipo]}
+      `;
+
+      // Mostrar/ocultar filtros específicos
+      document.getElementById('filtroEstadoContainer').style.display = 
+        tipo === 'megaeventos' ? 'block' : 'none';
+
+      // Actualizar tabs móviles
+      document.querySelectorAll('.tabBtn').forEach(btn => {
+        btn.classList.remove('bg-cyan-500', 'text-white');
+        btn.classList.add('bg-gray-200', 'text-gray-700');
+      });
+      event.target?.classList.remove('bg-gray-200', 'text-gray-700');
+      event.target?.classList.add('bg-cyan-500', 'text-white');
+
+      // Reiniciar y cargar
+      pagina = 1;
+      totalPag = Infinity;
+      feed.innerHTML = '';
+      loadContent(false);
+    }
+
+    // === CARGAR PARTICIPACIONES ===
+    async function loadParticipated() {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/events/mis-eventos/${integranteId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const json = await res.json();
+        if (!json.success) return;
+
+        let lista = [];
+        if (Array.isArray(json.eventos)) {
+          lista = json.eventos;
+        } else if (json.eventos && Array.isArray(json.eventos.todos)) {
+          lista = json.eventos.todos;
+        }
+
+        lista.forEach(e => participated.add(e._id));
+        document.getElementById('misParticipaciones').textContent = participated.size;
+      } catch (e) {
+        console.error('Error cargando participaciones:', e);
+      }
+    }
+
+    // === CARGAR CONTENIDO PRINCIPAL ===
+    async function loadContent(append = false) {
+      if (loading || pagina > totalPag) return;
+      loading = true;
+
+      if (!append) {
+        feed.innerHTML = '<p class="text-center text-gray-500">Cargando...</p>';
+      }
+
+      try {
+        if (tipoContenidoActual === 'todos') {
+          // carga TODOS los eventos y luego TODOS los megaeventosp
+          await loadEvents(append);
+          await loadMegaEvents(append);
+        }  else if (tipoContenidoActual === 'megaeventos') {
+          await loadMegaEvents(append);
+        } else {
+          await loadEvents(append);
+        }
+      } catch (err) {
+        console.error(err);
+        if (!append) {
+          feed.innerHTML = '<p class="text-center text-red-500">Error al cargar contenido.</p>';
+        }
+      }
+      loading = false;
+    }
+
+    // === CARGAR EVENTOS NORMALES ===
+    async function loadEvents(append = false, mixedMode = false) {
+      const params = new URLSearchParams({ 
+        pagina: mixedMode ? 1 : pagina, 
+        limite: mixedMode ? Math.floor(limite/2) : limite, 
+        estado: 'publicado' 
+      });
+      
+      if (qs('tipo')) params.append('tipo', qs('tipo'));
+      if (qs('ciudad')) params.append('ciudad', qs('ciudad'));
+
+      const url = qs('termino') && !mixedMode
+        ? `${API_BASE_URL}/api/events/buscar/${encodeURIComponent(qs('termino'))}?${params}`
+        : `${API_BASE_URL}/api/events?${params}`;
+
+      const res = await fetch(url);
+      const json = await res.json();
+      
+      if (!json.success) throw new Error(json.error || 'Error');
+      
+      if (!mixedMode) {
+        totalPag = json.paginacion.totalPaginas;
+        document.getElementById('totalEventos').textContent = json.paginacion.total;
+      }
+
+      if (!append && !mixedMode) feed.innerHTML = '';
+      
+      // Verificar likes
+      await Promise.all(json.eventos.map(ev => checkUserLike(ev._id)));
+      
+      // Obtener total de likes
+      await Promise.all(json.eventos.map(async ev => {
+        ev.totalLikes = await fetchTotalLikes(ev._id);
+      }));
+      
+      renderEventCards(json.eventos);
+      
+      if (!mixedMode) pagina++;
+    }
+
+    // === CARGAR MEGA EVENTOS ===
+    async function loadMegaEvents(append = false, mixedMode = false) {
+      const params = new URLSearchParams({ 
+        pagina: mixedMode ? 1 : pagina, 
+        limite: mixedMode ? Math.floor(limite/2) : limite 
+      });
+      
+      const categoria = qs('tipo');
+      if (categoria) params.append('categoria', categoria);
+      if (qs('ciudad')) params.append('ciudad', qs('ciudad'));
+      
+      const estado = qs('estadoMega');
+      if (estado && estado !== 'todos') params.append('estado', estado);
+
+      const url = `${API_BASE_URL}/api/mega-eventos?${params}`;
+      const res = await fetch(url);
+      const json = await res.json();
+      
+      if (!json.success) throw new Error(json.error || 'Error');
+      
+      if (!mixedMode) {
+        totalPag = json.paginacion.totalPaginas;
+        document.getElementById('totalMegaEventos').textContent = json.paginacion.total;
+      }
+
+      if (!append && !mixedMode) feed.innerHTML = '';
+      
+      renderMegaEventCards(json.megaEventos);
+      
+      if (!mixedMode) pagina++;
+    }
+
+    // === RENDERIZAR TARJETAS DE EVENTOS ===
+    function renderEventCards(eventos) {
+      if (!eventos.length && pagina === 1) {
+        feed.innerHTML = '<p class="text-center text-gray-500">No hay eventos disponibles.</p>';
+        return;
+      }
+
+      eventos.forEach(ev => {
+        const img = ev.imagenPrincipal?.url
+          ? `<img src="${ev.imagenPrincipal.url}" class="h-56 w-full object-cover">`
+          : `<div class="h-56 w-full flex items-center justify-center bg-gray-200 text-gray-500">Sin imagen</div>`;
+
+        const hasLiked = likedEvents.has(ev._id);
+        const body = `
+          <div class="p-4 flex-1 flex flex-col">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">Evento</span>
+              <span class="text-xs bg-cyan-100 text-cyan-800 px-2 py-1 rounded-full">${ev.tipoEvento}</span>
+            </div>
+            <h3 class="font-semibold text-lg mb-2 line-clamp-2">${ev.titulo}</h3>
+            <p class="text-sm text-gray-600 mb-1">
+              <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              ${fechaL(ev.fechaInicio)}
+            </p>
+            ${ev.locacion?.ciudad ? `
+              <p class="text-sm text-gray-600 mb-3">
+                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                ${ev.locacion.ciudad}
+              </p>
+            ` : ''}
+            
+            <div class="flex items-center gap-4 mt-auto pt-3 border-t">
+              <button class="likeBtn flex items-center gap-1 text-gray-600 hover:text-red-500 transition-colors ${hasLiked ? 'text-red-500' : ''}" 
+                      data-evento-id="${ev._id}">
+                <span class="text-xl">${hasLiked ? '❤️' : '🤍'}</span>
+                <span class="likesCount text-sm">${ev.totalLikes || 0}</span>
+              </button>
+              
+              ${ev.empresasPatrocinadoras?.length > 0 ? `
+                <span class="text-xs text-gray-500">
+                  ${ev.empresasPatrocinadoras.length} patrocinador${ev.empresasPatrocinadoras.length > 1 ? 'es' : ''}
+                </span>
+              ` : ''}
+            </div>
+          </div>`;
+
+        let btnHtml = '';
+        if (tipoUsuario === 'Integrante externo') {
+          if (participated.has(ev._id)) {
+            btnHtml = `
+              <div class="p-4 border-t border-gray-200 flex justify-center">
+                <button class="bg-gray-400 text-white font-medium py-2 px-6 rounded-lg cursor-not-allowed flex items-center gap-2" disabled>
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                  Ya participas
+                </button>
+              </div>`;
+          } else {
+            btnHtml = `
+              <div class="p-4 border-t border-gray-200 flex justify-center">
+                <button class="participarBtn bg-gradient-to-r from-cyan-500 to-green-500 hover:from-cyan-600 hover:to-green-600 text-white font-medium py-2 px-6 rounded-lg transition-all transform hover:scale-105"
+                        data-id="${ev._id}">
+                  Participar
+                </button>
+              </div>`;
+          }
+        }
+
+        const card = document.createElement('article');
+        card.className = 'bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col border border-gray-200 cursor-pointer';
+        card.innerHTML = img + body + btnHtml;
+
+        // Event listeners
+        const btnLike = card.querySelector('.likeBtn');
+        const spanLikes = card.querySelector('.likesCount');
+        btnLike?.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          await toggleLike(ev._id, btnLike, spanLikes);
+        });
+
+        if (tipoUsuario === 'Integrante externo' && !participated.has(ev._id)) {
+          const btn = card.querySelector('.participarBtn');
+          btn?.addEventListener('click', async e => {
+            e.stopPropagation();
+            await handleParticipar(btn, ev._id);
+          });
+        }
+
+        card.addEventListener('click', (e) => {
+          if (!e.target.closest('button')) {
+            window.location.href = `event/detalle-evento.html?eventoId=${ev._id}`;
+          }
+        });
+        
+        feed.appendChild(card);
+      });
+    }
+
+    // === RENDERIZAR TARJETAS DE MEGA EVENTOS ===
+    function renderMegaEventCards(megaEventos) {
+      megaEventos.forEach(mega => {
+        const img = mega.imagenPrincipal?.url
+          ? `<img src="${mega.imagenPrincipal.url}" class="h-56 w-full object-cover">`
+          : `<div class="h-56 w-full flex items-center justify-center bg-gradient-to-r from-purple-400 to-pink-400 text-white">
+              <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+              </svg>
+            </div>`;
+
+        const estadoColor = {
+          'convocatoria': 'bg-green-100 text-green-800',
+          'organizacion': 'bg-yellow-100 text-yellow-800',
+          'en_curso': 'bg-blue-100 text-blue-800',
+          'finalizado': 'bg-gray-100 text-gray-800'
+        };
+
+        const body = `
+          <div class="p-4 flex-1 flex flex-col">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full font-medium">
+                ⭐ Mega Evento
+              </span>
+              <span class="text-xs ${estadoColor[mega.estado] || 'bg-gray-100 text-gray-800'} px-2 py-1 rounded-full">
+                ${mega.estado}
+              </span>
+            </div>
+            <h3 class="font-bold text-lg mb-2 line-clamp-2">${mega.titulo}</h3>
+            <p class="text-sm text-gray-600 mb-1">
+              <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              ${fechaL(mega.fechaInicio)} - ${fechaL(mega.fechaFin)}
+            </p>
+            ${mega.ubicacion?.ciudad || mega.ubicacion?.direccion ? `
+              <p class="text-sm text-gray-600 mb-2">
+                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                ${mega.ubicacion.ciudad || mega.ubicacion.direccion}
+              </p>
+            ` : ''}
+            
+            <div class="bg-purple-50 rounded-lg p-3 mt-2 mb-3">
+              <p class="text-sm font-medium text-purple-800">
+                🎯 ${mega.resumen || `${mega.totalEventosAbsorbidos || 0} eventos incluidos`}
+              </p>
+            </div>
+            
+            <div class="flex items-center gap-2 mt-auto">
+              <span class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
+                ${mega.categoria}
+              </span>
+              ${mega.capacidadMaxima ? `
+                <span class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
+                  Capacidad: ${mega.capacidadMaxima}
+                </span>
+              ` : ''}
+            </div>
+          </div>`;
+
+        const btnHtml = `
+          <div class="p-4 border-t border-gray-200 flex justify-center">
+            <button class="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium py-2 px-6 rounded-lg transition-all transform hover:scale-105"
+                    onclick="window.location.href='event/mega/detalle-mega-evento.html?id=${mega._id}'">
+              Ver detalles
+            </button>
+          </div>`;
+
+        const card = document.createElement('article');
+        card.className = 'bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden flex flex-col border-2 border-purple-100 cursor-pointer';
+        card.innerHTML = img + body + btnHtml;
+
+        card.addEventListener('click', (e) => {
+          if (!e.target.closest('button')) {
+             window.location.href = `event/mega/detalle-mega-evento.html?id=${mega._id}`;
+          }
+        });
+        
+        feed.appendChild(card);
+      });
+    }
+
+    // === FUNCIONES DE INTERACCIÓN ===
+    async function fetchTotalLikes(eventoId) {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/likes/evento/${eventoId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const json = await res.json();
+        if (json.success) return json.totalLikes;
+      } catch (err) {
+        console.error('Error fetchTotalLikes:', err);
+      }
+      return 0;
+    }
+
+    async function checkUserLike(eventoId) {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/likes/evento/${eventoId}/check`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const json = await res.json();
+        if (json.success && json.hasLike) {
+          likedEvents.add(eventoId);
+        }
+        return json.hasLike;
+      } catch (e) {
+        console.error('Error verificando like:', e);
+        return false;
+      }
+    }
+
+    async function toggleLike(eventoId, btnLike, spanLikes) {
+      try {
+        btnLike.disabled = true;
+        
+        const res = await fetch(`${API_BASE_URL}/api/likes/evento/${eventoId}/toggle`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          }
+        });
+        
+        const json = await res.json();
+        if (!res.ok || !json.success) throw new Error(json.error || 'Error al procesar like');
+        
+        if (json.accion === 'like_agregado') {
+          likedEvents.add(eventoId);
+          btnLike.classList.add('text-red-500');
+          btnLike.querySelector('span').textContent = '❤️';
+        } else {
+          likedEvents.delete(eventoId);
+          btnLike.classList.remove('text-red-500');
+          btnLike.querySelector('span').textContent = '🤍';
+        }
+        
+        spanLikes.textContent = json.totalLikes;
+        
+      } catch (err) {
+        console.error('Error en like:', err);
+        showError('Error al procesar like: ' + err.message);
+      } finally {
+        btnLike.disabled = false;
+      }
+    }
+
+    async function handleParticipar(btn, eventoId) {
+      btn.disabled = true;
+      btn.textContent = 'Registrando...';
+      
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/events/${eventoId}/participantes`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({ integranteId })
+        });
+
+        const js = await res.json();
+
+        if (res.status === 403 && js.error === 'Inscripciones cerradas') {
+          showError('Lo siento, las inscripciones están cerradas para este evento.');
+          btn.textContent = 'Inscripciones cerradas';
+          btn.classList.remove('from-cyan-500', 'to-green-500');
+          btn.classList.add('bg-gray-400');
+          return;
+        }
+
+        if (!res.ok || !js.success) {
+          throw new Error(js.error || res.statusText);
+        }
+
+        participated.add(eventoId);
+        btn.innerHTML = `
+          <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          Ya participas
+        `;
+        btn.classList.remove('from-cyan-500', 'to-green-500', 'hover:from-cyan-600', 'hover:to-green-600');
+        btn.classList.add('bg-gray-400', 'cursor-not-allowed');
+        
+        // Actualizar contador
+        document.getElementById('misParticipaciones').textContent = participated.size;
+
+      } catch (err) {
+        console.error(err);
+        btn.disabled = false;
+        btn.textContent = 'Participar';
+        showError('Error al registrar: ' + err.message);
+      }
+    }
+
+    // === SCROLL INFINITO ===
+    new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && !loading) {
+        loadContent(true);
+      }
+    }, { rootMargin: '0px 0px 400px 0px' }).observe(sentinel);
+
+    // === EVENT LISTENERS ===
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.clear();
+      window.location.href = '../../index.html';
+    });
+
+    // Selector de tipo de contenido
+    document.getElementById('tipoContenido').addEventListener('change', (e) => {
+      cambiarTipoContenido(e.target.value);
+    });
+
+    // Filtros reactivos
+    ['termino', 'tipo', 'ciudad', 'estadoMega'].forEach(id => {
+      const inp = document.getElementById(id);
+      if (!inp) return;
+      
+      let debounceTimer;
+      inp.addEventListener('input', () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+          pagina = 1;
+          totalPag = Infinity;
+          feed.innerHTML = '';
+          likedEvents.clear();
+          loadContent(false);
+        }, 300);
+      });
+    });
+
+    // Sincronizar filtros móviles
+    const tipoMobile = document.getElementById('tipoMobile');
+    const ciudadMobile = document.getElementById('ciudadMobile');
+    
+    document.getElementById('tipo')?.addEventListener('change', (e) => {
+      if (tipoMobile) tipoMobile.value = e.target.value;
+    });
+    
+    document.getElementById('ciudad')?.addEventListener('input', (e) => {
+      if (ciudadMobile) ciudadMobile.value = e.target.value;
+    });
+    
+    tipoMobile?.addEventListener('change', (e) => {
+      document.getElementById('tipo').value = e.target.value;
+      document.getElementById('tipo').dispatchEvent(new Event('input'));
+    });
+    
+    ciudadMobile?.addEventListener('input', (e) => {
+      document.getElementById('ciudad').value = e.target.value;
+      document.getElementById('ciudad').dispatchEvent(new Event('input'));
+    });
+
+    // === INICIALIZACIÓN ===
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadParticipated();
+      loadContent(false);
+    });
+  </script>
+
+  <style>
+    /* Animaciones suaves */
+    * { transition: all 0.2s ease-in-out; }
+    
+    /* Hover effects mejorados */
+    .hover-card {
+      transition: all 0.3s ease;
+    }
+    
+    .hover-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Scrollbar personalizado */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { 
+      background: #cbd5e1; 
+      border-radius: 3px; 
+    }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    /* Loading skeleton */
+    .skeleton {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+    }
+
+    @keyframes loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+  </style>
+</body>
+</html>

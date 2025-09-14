@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>UNI2 • Inicio ONG</title>
+  <!-- Tailwind + tu configuración de colores -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="../assets/js/tailwind-global.js"></script>
+  <!-- Config + lógica de la página -->
+  <script src="../assets/js/config.js"></script>
+  <script type="module" defer src="../scripts/home-ong.js"></script>
+</head>
+<body class="min-h-screen bg-gray-100 font-sans">
+
+  <!-- Barra superior -->
+  <header class="bg-white shadow-lg sticky top-0 z-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 py-3">
+      <div class="flex items-center justify-between gap-4">
+        <!-- Logo + nombre -->
+        <div class="flex items-center gap-4">
+          <a href="../welcome.html" class="flex items-center gap-3 shrink-0 group">
+            <div class="relative">
+              <img src="../assets/img/UNI2.png" alt="UNI2" class="h-12 w-12 object-contain drop-shadow-md group-hover:scale-105 transition-transform duration-200">
+              <div class="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full animate-pulse"></div>
+            </div>
+            <div class="hidden sm:block">
+              <h1 class="text-xl font-bold bg-gradient-to-r from-emerald-600 to-cyan-600 bg-clip-text text-transparent">UNI2</h1>
+              <p class="text-xs text-gray-500">Panel ONG</p>
+            </div>
+          </a>
+        </div>
+
+        <!-- Enlaces de navegación centrales -->
+        
+
+        <!-- Acciones y usuario -->
+        <div class="flex items-center gap-3">
+          <!-- Acciones dinámicas -->
+          <div id="actions" class="flex items-center gap-2"></div>
+          
+          
+          
+          <a href="profile/perfil.html"
+            class="relative p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-all duration-200">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M5.121 17.804A4 4 0 018 17h8a4 4 0 012.879 0M12 12a4 4 0 100-8 4 4 0 000 8z" />
+            </svg>
+          </a>
+
+
+          
+          <!-- Logout -->
+          <button id="logoutBtn" 
+                  class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all duration-200">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Navegación móvil -->
+      <div class="lg:hidden mt-3 flex gap-2 overflow-x-auto pb-2">
+        <a href="../DME/DachME.html" class="flex items-center gap-1 px-3 py-1 bg-gray-100 rounded-full text-sm font-medium text-gray-700 whitespace-nowrap">
+          <span id="DASHMEV">Dashboard ME</span>
+        </a>
+        <a href="../DEV/DachME.html" class="flex items-center gap-1 px-3 py-1 bg-gray-100 rounded-full text-sm font-medium text-gray-700 whitespace-nowrap">
+          <span id="DASHEV">Dashboard EV</span>
+        </a>
+        <a href="../pages/profile/perfil.html" class="flex items-center gap-1 px-3 py-1 bg-gray-100 rounded-full text-sm font-medium text-gray-700 whitespace-nowrap">
+          <span id="orgName">Mi Organización</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Layout principal estilo Facebook -->
+  <div class="max-w-7xl mx-auto px-4 py-6">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      
+      <!-- Sidebar izquierdo -->
+      <div class="hidden lg:block">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-24">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+            </svg>
+            Filtros
+          </h3>
+          
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Tipo</label>
+              <select id="filtroTipo" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200">
+                <option value="todos">Todos</option>
+                <option value="evento">Eventos</option>
+                <option value="mega">Mega-Eventos</option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Estado</label>
+              <select id="filtroEstado" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200">
+                <option value="todos">Todos los estados</option>
+                <option value="publicado">Publicado</option>
+                <option value="borrador">Borrador</option>
+                <option value="convocatoria">Convocatoria</option>
+                <option value="organizacion">En organización</option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Buscar</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                  </svg>
+                </div>
+                <input id="filtroTexto" type="text" placeholder="Buscar título…" 
+                       class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200" />
+              </div>
+            </div>
+          </div>
+
+          
+        </div>
+      </div>
+
+      <!-- Contenido principal -->
+      <div class="lg:col-span-3">
+        <!-- Header del contenido principal -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+          <div class="flex items-center justify-between mb-4">
+            <h1 id="titulo" class="text-2xl font-bold text-gray-900 flex items-center gap-3">
+              <svg class="w-7 h-7 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+              </svg>
+              Mis Eventos
+            </h1>
+            
+            <div class="flex items-center gap-2">
+              <button class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                </svg>
+              </button>
+              <button class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Filtros móviles -->
+          <div class="lg:hidden space-y-3">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <select id="filtroTipo" class="px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-emerald-500">
+                <option value="todos">Todos</option>
+                <option value="evento">Eventos</option>
+                <option value="mega">Mega-Eventos</option>
+              </select>
+              
+              <select id="filtroEstado" class="px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-emerald-500">
+                <option value="todos">Todos los estados</option>
+                <option value="publicado">Publicado</option>
+                <option value="borrador">Borrador</option>
+                <option value="convocatoria">Convocatoria</option>
+                <option value="organizacion">En organización</option>
+              </select>
+              
+              <input id="filtroTexto" type="text" placeholder="Buscar título…" 
+                     class="px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-emerald-500" />
+            </div>
+          </div>
+
+          <!-- Botón crear evento móvil -->
+          <div class="sm:hidden mt-4">
+            <button class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white font-medium rounded-lg shadow-md transition-all duration-200">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+              Crear Evento
+            </button>
+          </div>
+        </div>
+
+        <!-- Grid de eventos -->
+        <div id="eventsContainer" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div class="col-span-full flex items-center justify-center py-12">
+            <div class="text-center">
+              <div class="w-12 h-12 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center animate-pulse">
+                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a1 1 0 011-1h6a1 1 0 011 1v4m-9 0h10m-10 0H6a2 2 0 00-2 2v9a2 2 0 002 2h12a2 2 0 002-2V9a2 2 0 00-2-2h-2"></path>
+                </svg>
+              </div>
+              <p class="text-gray-500 font-medium">Cargando eventos...</p>
+              <p class="text-sm text-gray-400 mt-1">Por favor espera un momento</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    /* Colores de marca personalizados */
+    .text-brand-cian { color: #06b6d4; }
+    .text-brand-lima { color: #84cc16; }
+    .text-brand-profundo { color: #0f172a; }
+    .text-brand-oscuro { color: #1e293b; }
+    .text-brand-marino { color: #334155; }
+    
+    .bg-brand-cian { background-color: #06b6d4; }
+    .bg-brand-lima { background-color: #84cc16; }
+    .bg-brand-profundo { background-color: #0f172a; }
+    .bg-brand-oscuro { background-color: #1e293b; }
+    .bg-brand-marino { background-color: #334155; }
+
+    /* Hover effects para cards */
+    .hover-card {
+      transition: all 0.3s ease;
+    }
+
+    .hover-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Animaciones suaves */
+    * {
+      transition: all 0.2s ease-in-out;
+    }
+
+    /* Estilos para el scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* Focus states mejorados */
+    input:focus, select:focus, button:focus {
+      outline: none;
+      ring-offset-2: 2px;
+    }
+
+    /* Loading skeleton styles */
+    .skeleton {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+    }
+
+    @keyframes loading {
+      0% {
+        background-position: 200% 0;
+      }
+      100% {
+        background-position: -200% 0;
+      }
+    }
+
+    /* Responsive improvements */
+    @media (max-width: 1024px) {
+      .max-w-7xl {
+        max-width: 100%;
+      }
+    }
+
+    /* Custom gradients */
+    .bg-gradient-to-br {
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    }
+
+    /* Badge styles para estados de eventos */
+    .badge-publicado {
+      @apply bg-green-100 text-green-800 px-2 py-1 text-xs font-medium rounded-full;
+    }
+
+    .badge-borrador {
+      @apply bg-yellow-100 text-yellow-800 px-2 py-1 text-xs font-medium rounded-full;
+    }
+
+    .badge-convocatoria {
+      @apply bg-blue-100 text-blue-800 px-2 py-1 text-xs font-medium rounded-full;
+    }
+
+    .badge-organizacion {
+      @apply bg-purple-100 text-purple-800 px-2 py-1 text-xs font-medium rounded-full;
+    }
+
+    /* Efectos hover para navegación */
+    nav a:hover {
+      transform: translateY(-1px);
+    }
+
+    /* Grid responsive mejorado */
+    @media (min-width: 640px) {
+      #eventsContainer {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      }
+    }
+
+    @media (min-width: 1024px) {
+      #eventsContainer {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      }
+    }
+  </style>
+</body>
+</html>

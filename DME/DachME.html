@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Mega Eventos - UNI2</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .filter-group label {
+            font-size: 0.8rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .filter-group input, .filter-group select {
+            padding: 0.5rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .filter-group input:focus, .filter-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f7fafc;
+            color: #4a5568;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .dashboard-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1rem;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: #64748b;
+            white-space: nowrap;
+        }
+
+        .tab.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .tab:hover:not(.active) {
+            background: #f1f5f9;
+        }
+
+        .dashboard-content {
+            display: none;
+        }
+
+        .dashboard-content.active {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        .stat-icon.primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+        }
+
+        .stat-icon.success {
+            background: linear-gradient(45deg, #48bb78, #38a169);
+        }
+
+        .stat-icon.warning {
+            background: linear-gradient(45deg, #ed8936, #dd6b20);
+        }
+
+        .stat-icon.info {
+            background: linear-gradient(45deg, #4299e1, #3182ce);
+        }
+
+        .stat-icon.purple {
+            background: linear-gradient(45deg, #9f7aea, #805ad5);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .stat-change {
+            font-size: 0.9rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .stat-change.positive {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .stat-change.negative {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .stat-change.neutral {
+            background: #bee3f8;
+            color: #2a4365;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 350px;
+        }
+
+        .mega-events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .mega-event-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .mega-event-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .mega-event-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .mega-event-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .mega-event-category {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .mega-event-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .mini-stat {
+            text-align: center;
+            padding: 0.8rem;
+            background: #f7fafc;
+            border-radius: 8px;
+        }
+
+        .mini-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .mini-stat-label {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 0.2rem;
+        }
+
+        .collaboration-network {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .network-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .network-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .network-subtitle {
+            color: #64748b;
+            font-size: 1rem;
+        }
+
+        .ong-connections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .ong-connection {
+            padding: 1rem;
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .connection-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .ong-name {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .connection-count {
+            background: #667eea;
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .table-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .table-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+        }
+
+        .table-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #f7fafc;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            color: #2d3748;
+        }
+
+        .badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge.social {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .badge.educativo {
+            background: #bee3f8;
+            color: #2a4365;
+        }
+
+        .badge.ambiental {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .badge.cultural {
+            background: #fbb6ce;
+            color: #744210;
+        }
+
+        .badge.salud {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .badge.tecnologia {
+            background: #e9d8fd;
+            color: #553c9a;
+        }
+
+        .badge.planificacion {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .badge.convocatoria {
+            background: #fbb6ce;
+            color: #744210;
+        }
+
+        .badge.organizacion {
+            background: #bee3f8;
+            color: #2a4365;
+        }
+
+        .badge.en_curso {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .badge.finalizado {
+            background: #e9d8fd;
+            color: #553c9a;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+
+        .loading i {
+            animation: spin 2s linear infinite;
+            margin-right: 0.8rem;
+            font-size: 1.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #fed7d7;
+            color: #742a2a;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid #feb2b2;
+            margin: 1rem 0;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .impact-score {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .impact-bar {
+            width: 80px;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .impact-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #48bb78, #38a169);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        @media (max-width: 1024px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .mega-events-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .filters {
+                flex-wrap: wrap;
+            }
+
+            .dashboard-tabs {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .tab {
+                width: 100%;
+                text-align: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-rocket"></i>
+                <h1>Dashboard Mega Eventos</h1>
+            </div>
+            <div class="filters">
+                <div class="filter-group">
+                    <label>Fecha Inicio</label>
+                    <input type="date" id="fechaInicio">
+                </div>
+                <div class="filter-group">
+                    <label>Fecha Fin</label>
+                    <input type="date" id="fechaFin">
+                </div>
+                <div class="filter-group">
+                    <label>Categoría</label>
+                    <select id="categoriaFilter">
+                        <option value="">Todas las categorías</option>
+                        <option value="social">Social</option>
+                        <option value="educativo">Educativo</option>
+                        <option value="ambiental">Ambiental</option>
+                        <option value="cultural">Cultural</option>
+                        <option value="salud">Salud</option>
+                        <option value="tecnologia">Tecnología</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="aplicarFiltros()">
+                    <i class="fas fa-filter"></i> Aplicar
+                </button>
+                <button class="btn btn-secondary" onclick="limpiarFiltros()">
+                    <i class="fas fa-eraser"></i> Limpiar
+                </button>
+                <a href="dashboard-eventos.html" class="btn btn-secondary">
+                    <i class="fas fa-calendar-alt"></i> Eventos Regulares
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="dashboard-tabs">
+            <button class="tab active" onclick="cambiarTab('general')">
+                <i class="fas fa-tachometer-alt"></i> General
+            </button>
+            <button class="tab" onclick="cambiarTab('colaboracion')">
+                <i class="fas fa-handshake"></i> Colaboración
+            </button>
+            <button class="tab" onclick="cambiarTab('patrocinios')">
+                <i class="fas fa-coins"></i> Patrocinios
+            </button>
+            <button class="tab" onclick="cambiarTab('participacion')">
+                <i class="fas fa-users"></i> Participación
+            </button>
+            <button class="tab" onclick="cambiarTab('impacto')">
+                <i class="fas fa-chart-line"></i> Impacto
+            </button>
+            <button class="tab" onclick="cambiarTab('tendencias')">
+                <i class="fas fa-crystal-ball"></i> Tendencias
+            </button>
+        </div>
+
+        <!-- Dashboard General -->
+        <div id="general" class="dashboard-content active">
+            <div class="stats-grid" id="statsGeneral">
+                <!-- Stats cards will be populated by JavaScript -->
+            </div>
+            
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Mega Eventos por Estado</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="estadosChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Distribución por Categoría</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="categoriasChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mega-events-grid" id="megaEventosDestacados">
+                <!-- Mega eventos destacados will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Dashboard Colaboración -->
+        <div id="colaboracion" class="dashboard-content">
+            <div class="stats-grid" id="statsColaboracion">
+                <!-- Stats cards will be populated by JavaScript -->
+            </div>
+
+            <div class="collaboration-network">
+                <div class="network-header">
+                    <h3 class="network-title">Red de Colaboración entre ONGs</h3>
+                    <p class="network-subtitle">Conexiones y alianzas estratégicas en mega eventos</p>
+                </div>
+                <div class="ong-connections" id="redesColaboracion">
+                    <!-- Network will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">ONGs Más Colaborativas</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="colaborativasChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Roles de Colaboración</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="rolesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Patrocinios -->
+        <div id="patrocinios" class="dashboard-content">
+            <div class="stats-grid" id="statsPatrocinios">
+                <!-- Stats cards will be populated by JavaScript -->
+            </div>
+            
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Top Empresas Patrocinadoras</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="topPatrocinadoresChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Evolución de Patrocinios</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="evolucionPatrociniosChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-card">
+                <div class="table-header">
+                    <h3 class="table-title">Mega Eventos con Mayor Apoyo Financiero</h3>
+                </div>
+                <div class="table-container">
+                    <table id="mayorApoyoTable">
+                        <thead>
+                            <tr>
+                                <th>Mega Evento</th>
+                                <th>Categoría</th>
+                                <th>ONG Organizadora</th>
+                                <th>Patrocinadores</th>
+                                <th>Monto Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Participación -->
+        <div id="participacion" class="dashboard-content">
+            <div class="stats-grid" id="statsParticipacion">
+                <!-- Stats cards will be populated by JavaScript -->
+            </div>
+            
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Participación por Tipo</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="participacionTipoChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Análisis de Capacidad</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="capacidadChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-card">
+                <div class="table-header">
+                    <h3 class="table-title">Mega Eventos con Mayor Participación</h3>
+                </div>
+                <div class="table-container">
+                    <table id="mayorParticipacionTable">
+                        <thead>
+                            <tr>
+                                <th>Mega Evento</th>
+                                <th>Fecha</th>
+                                <th>Categoría</th>
+                                <th>Participantes</th>
+                                <th>Voluntarios</th>
+                                <th>% Capacidad</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Impacto -->
+        <div id="impacto" class="dashboard-content">
+            <div class="stats-grid" id="statsImpacto">
+                <!-- Stats cards will be populated by JavaScript -->
+            </div>
+            
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Impacto por Categoría</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="impactoCategoriaChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Evolución del Impacto</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="evolucionImpactoChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-card">
+                <div class="table-header">
+                    <h3 class="table-title">Mega Eventos con Mayor Impacto Social</h3>
+                </div>
+                <div class="table-container">
+                    <table id="mayorImpactoTable">
+                        <thead>
+                            <tr>
+                                <th>Mega Evento</th>
+                                <th>Categoría</th>
+                                <th>Participantes</th>
+                                <th>ONGs Involucradas</th>
+                                <th>Score de Impacto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Tendencias -->
+        <div id="tendencias" class="dashboard-content">
+            <div class="stats-grid" id="statsTendencias">
+                <!-- Stats cards will be populated by JavaScript -->
+            </div>
+            
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Tendencias Generales</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="tendenciasGeneralesChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Patrones de Éxito</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="patronesExitoChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-card" id="prediccionesContainer">
+                <div class="table-header">
+                    <h3 class="table-title">Predicciones y Proyecciones</h3>
+                </div>
+                <div style="padding: 2rem;" id="prediccionesContent">
+                    <!-- Predictions will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="DachME.js"></script>
+</body>
+</html>

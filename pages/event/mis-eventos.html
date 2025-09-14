@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mis Eventos</title>
+
+  <!-- Tailwind + estilos globales -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'brand-purple': '#3883D3',
+            'brand-cyan': '#21BFC4', 
+            'brand-green': '#36C974',
+            'brand-light': '#F9F9F9'
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+
+  <!-- Config (API_BASE_URL) y script específico -->
+  <script src="../../assets/js/config.js"></script>
+</head>
+<body class="font-sans bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen">
+
+  <main class="max-w-7xl mx-auto py-12 px-6">
+    <!-- Header elegante -->
+    <div class="text-center mb-12">
+      <h1 class="text-5xl font-bold bg-gradient-to-r from-brand-cyan via-brand-purple to-brand-green bg-clip-text text-transparent mb-4">
+        Mis Eventos
+      </h1>
+      <div class="w-24 h-1 bg-gradient-to-r from-brand-cyan to-brand-purple mx-auto rounded-full"></div>
+    </div>
+
+    <!-- Feed de eventos -->
+    <div id="feed" class="space-y-8"></div>
+    <div id="sentinel" class="h-1"></div>
+  </main>
+
+  <script>
+    // ================================================
+    // 1.  SEGURIDAD BÁSICA
+    // ================================================
+    const token       = localStorage.getItem('token');
+    const usuarioId   = localStorage.getItem('id_usuario');
+    const tipoUsuario = localStorage.getItem('tipo_usuario') || '';
+
+    if (!token) {
+      window.location.href = '../index.html';
+      throw new Error('Sin token de autenticación');
+    }
+
+    // ================================================
+    // 2.  REFERENCIAS DOM  +  STATE
+    // ================================================
+    const feed     = document.getElementById('feed');
+    const sentinel = document.getElementById('sentinel');
+
+    let pagina     = 1;
+    const limite   = 10;
+    let totalPag   = Infinity;
+    let loading    = false;
+
+    document.addEventListener('DOMContentLoaded', () => loadMyEvents());
+
+    // ================================================
+    // 3.  CARGAR EVENTOS (paginado)
+    // ================================================
+    async function loadMyEvents(append = false) {
+      if (loading || pagina > totalPag) return;
+      loading = true;
+
+      if (!append) {
+        feed.innerHTML = `
+          <div class="flex justify-center items-center py-20">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-cyan"></div>
+            <span class="ml-4 text-white text-lg">Cargando eventos...</span>
+          </div>
+        `;
+      }
+
+      const params = new URLSearchParams({ pagina, limite });
+      let endpoint;
+
+      if (tipoUsuario === 'Empresa') {
+        endpoint = `${API_BASE_URL}/api/events/empresas/${usuarioId}/eventos?tipo=todos&${params.toString()}`;
+      } else {
+        endpoint = `${API_BASE_URL}/api/events/mis-eventos/${usuarioId}?${params.toString()}`;
+      }
+
+      try {
+        const res  = await fetch(endpoint, { headers: { Authorization: `Bearer ${token}` } });
+        const json = await res.json();
+
+        if (!res.ok || !json.success) throw new Error(json.error || res.statusText);
+
+        let eventosArray = [];
+        let totalEventos = 0;
+
+        if (tipoUsuario === 'Empresa') {
+          eventosArray = json.eventos ?? [];
+          totalEventos = json.total ?? eventosArray.length;
+        } else {
+          eventosArray = json.eventos?.activos ?? json.eventos ?? [];
+          totalEventos = json.resumen?.totalEventos ?? json.total ?? eventosArray.length;
+        }
+
+        totalPag = Math.max(1, Math.ceil(totalEventos / limite));
+
+        if (!append) feed.innerHTML = '';
+        renderCards(eventosArray);
+        pagina++;
+      } catch (err) {
+        console.error(err);
+        if (!append) {
+          feed.innerHTML = `
+            <div class="text-center py-20">
+              <div class="text-red-400 text-6xl mb-4">⚠️</div>
+              <p class="text-red-300 text-xl">Error al cargar tus eventos</p>
+              <button onclick="location.reload()" class="mt-4 px-6 py-2 bg-brand-purple hover:bg-opacity-80 text-white rounded-lg transition-all">
+                Reintentar
+              </button>
+            </div>
+          `;
+        }
+      }
+
+      loading = false;
+    }
+
+    // ================================================
+    // 4.  RENDER DE TARJETAS ELEGANTES
+    // ================================================
+    function renderCards(arr) {
+      if (!arr.length && pagina === 1) {
+        feed.innerHTML = `
+          <div class="text-center py-20">
+            <div class="text-slate-400 text-6xl mb-4">📅</div>
+            <p class="text-slate-300 text-xl mb-2">No tienes eventos registrados</p>
+            <p class="text-slate-400">¡Explora y únete a eventos increíbles!</p>
+          </div>
+        `;
+        return;
+      }
+
+      arr.forEach(ev => {
+        // Imagen con gradiente overlay
+        const img = ev.imagenPrincipal?.url
+          ? `
+            <div class="relative h-64 overflow-hidden">
+              <img src="${ev.imagenPrincipal.url}" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110" />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+            </div>
+          `
+          : `
+            <div class="relative h-64 bg-gradient-to-br from-brand-purple/20 to-brand-cyan/20 flex items-center justify-center">
+              <div class="text-center">
+                <div class="text-6xl text-slate-400 mb-2">🎪</div>
+                <p class="text-slate-400 font-medium">Sin imagen</p>
+              </div>
+            </div>
+          `;
+
+        // Badge con colores específicos
+        const getBadgeColor = (estado, tipo) => {
+          if (tipoUsuario === 'Empresa' && tipo) {
+            return 'bg-brand-green hover:bg-brand-green/80';
+          }
+          switch (estado?.toLowerCase()) {
+            case 'activo': return 'bg-brand-green hover:bg-brand-green/80';
+            case 'pendiente': return 'bg-brand-purple hover:bg-brand-purple/80';
+            case 'completado': return 'bg-brand-cyan hover:bg-brand-cyan/80';
+            default: return 'bg-slate-500 hover:bg-slate-400';
+          }
+        };
+
+        const badgeText = tipoUsuario === 'Empresa' && ev.tipoParticipacion ? ev.tipoParticipacion : ev.estado;
+        const badgeColor = getBadgeColor(ev.estado, ev.tipoParticipacion);
+
+        const badge = `
+          <span class="px-4 py-2 rounded-full text-sm font-semibold text-white ${badgeColor} transition-all duration-300 transform hover:scale-105 shadow-lg">
+            ${badgeText}
+          </span>
+        `;
+
+        // Fecha formateada elegante
+        const fechaFormatted = new Date(ev.fechaInicio).toLocaleDateString('es-ES', {
+          weekday: 'short',
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        });
+
+        // Tarjeta completa con diseño elegante y ancho
+        const card = document.createElement('article');
+        card.className = 'group bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl hover:shadow-brand-cyan/20 transition-all duration-500 overflow-hidden cursor-pointer transform hover:-translate-y-2 border border-white/20';
+        
+        card.innerHTML = `
+          ${img}
+          <div class="p-8">
+            <div class="flex items-start justify-between mb-6">
+              <div class="flex-1 pr-4">
+                <h3 class="text-2xl font-bold text-slate-800 mb-3 line-clamp-2 group-hover:text-brand-purple transition-colors duration-300">
+                  ${ev.titulo}
+                </h3>
+                <div class="flex items-center text-slate-600 mb-4">
+                  <svg class="w-5 h-5 mr-2 text-brand-cyan" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+                  </svg>
+                  <span class="font-medium">${fechaFormatted}</span>
+                </div>
+              </div>
+              ${badge}
+            </div>
+            
+            <!-- Botón de acción elegante -->
+            <div class="flex items-center justify-between pt-4 border-t border-slate-200">
+              <div class="text-sm text-slate-500">
+                <span>Click para ver detalles</span>
+              </div>
+              <div class="flex items-center text-brand-purple group-hover:text-brand-cyan transition-colors duration-300">
+                <span class="mr-2 font-semibold">Ver más</span>
+                <svg class="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+        `;
+
+        card.onclick = () => window.location.href = `detalle-evento.html?eventoId=${ev._id}`;
+        feed.appendChild(card);
+      });
+    }
+
+    // ================================================
+    // 5.  INFINITE SCROLL
+    // ================================================
+    const obs = new IntersectionObserver(
+      entries => { 
+        if (entries[0].isIntersecting) loadMyEvents(true); 
+      },
+      { rootMargin: '0px 0px 400px 0px' }
+    );
+
+    obs.observe(sentinel);
+  </script>
+
+</body>
+</html>

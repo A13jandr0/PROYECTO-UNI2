@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Guía de KPIs del Evento</title>
+
+<!-- ► Fuente e iconos                                        -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+  /* ─────────── PALETA ─────────── */
+  :root{
+    --c-primary:  #3883D3;  /* azul */
+    --c-secondary:#21BFC4;  /* cyan  */
+    --c-success:  #36C974;  /* verde */
+    --c-bg:       #F9F9F9;  /* gris muy claro */
+    --c-text:     #1f2937;  /* gris oscuro-slate*/
+  }
+
+  /* ─────────── RESETEO BÁSICO ─────────── */
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--c-bg);
+    color:var(--c-text);
+    line-height:1.55;
+  }
+  h1,h2{font-weight:700}
+  h3{font-weight:600}
+
+  /* ─────────── LAYOUT ─────────── */
+  .wrapper{
+    width:min(1100px, 92%);
+    margin-inline:auto;
+    padding-block:3rem;
+  }
+  .grid{
+    display:grid;
+    gap:1.5rem;
+  }
+  @media (min-width:800px){
+    .grid-2{grid-template-columns:repeat(2,1fr)}
+    .grid-3{grid-template-columns:repeat(3,1fr)}
+  }
+
+  /* ─────────── COMPONENTES ─────────── */
+  header{
+    background:linear-gradient(90deg,var(--c-primary) 0%, var(--c-secondary) 100%);
+    color:#fff;
+    padding:3rem 1rem 4rem;
+    clip-path:polygon(0 0,100% 0,100% 80%,0 100%);
+    margin-bottom:3rem;
+  }
+  header h1{font-size:2.2rem;text-align:center}
+  .card{
+    background:#fff;
+    border-radius:14px;
+    padding:1.75rem 1.5rem;
+    box-shadow:0 4px 12px rgb(0 0 0 / 0.06);
+    position:relative;
+    overflow:hidden;
+  }
+  .card::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    border-radius:inherit;
+    background:linear-gradient(135deg,transparent 0%,var(--c-secondary) 120%);
+    opacity:0.05;
+    pointer-events:none;
+  }
+  .card h3{
+    display:flex;
+    align-items:center;
+    gap:.6rem;
+    color:var(--c-primary);
+    margin-bottom:.8rem;
+  }
+  .badge{
+    display:inline-block;
+    padding:.18rem .55rem;
+    border-radius:6px;
+    font-size:.75rem;
+    font-weight:600;
+    color:#fff;
+    background:var(--c-success);
+    margin-left:.3rem;
+  }
+  ul{margin-left:1.1rem;margin-top:.6rem}
+  li{margin-block:.3rem;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1><i class="fas fa-chart-pie"></i> Guía rápida de los KPIs del evento</h1>
+</header>
+
+<div class="wrapper grid grid-2">
+
+  <!-- Éxito del evento -->
+  <section class="card">
+    <h3><i class="fas fa-trophy"></i> Éxito del evento <span class="badge">Score</span></h3>
+    <p>
+      Un índice de 0–100 que resume el rendimiento global. <br>
+      <strong>Factores y pesos:</strong>
+    </p>
+    <ul>
+      <li><b>30 %</b> — Asistencia real vs inscritos.</li>
+      <li><b>25 %</b> — % de aforo utilizado.</li>
+      <li><b>20 %</b> — Engagement (comentarios/feedback).</li>
+      <li><b>15 %</b> — Calidad del contenido (portada + imágenes promo).</li>
+      <li><b>10 %</b> — Apoyo de empresas (patrocinadores/auspiciadores).</li>
+    </ul>
+    <p style="margin-top:.9rem">Se clasifica como <em>Excelente, Bueno, Regular o Bajo</em> y colorea la cifra en la tarjeta del dashboard.</p>
+  </section>
+
+  <!-- Fecha vs hoy -->
+  <section class="card">
+    <h3><i class="fas fa-calendar-day"></i> Fecha vs hoy</h3>
+    <p>
+      Compara la fecha de inicio del evento con la fecha actual:
+    </p>
+    <ul>
+      <li><b>Futuro</b> → muestra “<kbd>X&nbsp;días</kbd>” (cuánto falta).</li>
+      <li><b>Pasado</b> → muestra “<kbd>Hace&nbsp;X&nbsp;días</kbd>”.</li>
+    </ul>
+    <p style="margin-top:.9rem">Se calcula con <code>diasHastaEvento</code> y <code>diasDesdeEvento</code> en el back-end.</p>
+  </section>
+
+  <!-- Proyecciones -->
+  <section class="card">
+    <h3><i class="fas fa-chart-line"></i> Proyecciones</h3>
+    <p>Aparece solo si el evento aún no comienza y ya hay inscripciones.</p>
+    <ul>
+      <li><b>Inscripciones proyectadas</b> — inscritos actuales + ritmo diario × días restantes.</li>
+      <li><b>% Lleno</b> — probabilidad de alcanzar el aforo máximo.</li>
+      <li><b>Días para lleno</b> — cuántos días faltan para llegar al 100 % de capacidad.</li>
+    </ul>
+    <p>Basado en la variable <code>tasaInscripcionPorDia</code>.</p>
+  </section>
+
+  <!-- Tiempo & Cambios -->
+  <section class="card">
+    <h3><i class="fas fa-hourglass-half"></i> Tiempo &amp; Cambios</h3>
+    <ul>
+      <li><b>Desde creación</b> — días transcurridos desde que el evento fue creado.</li>
+      <li><b>Cambios de estado</b> — cuántas veces pasó por “borrador → publicado → …”.</li>
+    </ul>
+    <p style="margin-top:.9rem">Útil para saber qué tan dinámico ha sido el evento y su gestión.</p>
+  </section>
+
+</div>
+
+<footer style="text-align:center;font-size:.75rem;margin:3rem 0;color:#64748b">
+  <p>© 2025 Tu Plataforma. — Paleta&nbsp;#3883D3 #21BFC4 #36C974 #F9F9F9</p>
+</footer>
+
+</body>
+</html>

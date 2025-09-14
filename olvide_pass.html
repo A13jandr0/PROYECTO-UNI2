@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Contraseña - UNI2</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .title {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            margin-top: 10px;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .step-dot {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #e1e1e1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 5px;
+            font-weight: bold;
+            color: #888;
+        }
+
+        .step-dot.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .step-dot.completed {
+            background: #28a745;
+            color: white;
+        }
+
+        .back-to-login {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-to-login a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .back-to-login a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">🔄 Recuperar Contraseña</h1>
+        
+        <div class="step-indicator">
+            <div class="step-dot active" id="dot1">1</div>
+            <div class="step-dot" id="dot2">2</div>
+            <div class="step-dot" id="dot3">3</div>
+        </div>
+
+        <div id="message"></div>
+
+        <!-- PASO 1: Verificar Email -->
+        <div class="step active" id="step1">
+            <h3>Paso 1: Verificar tu email</h3>
+            <form id="checkEmailForm">
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <button type="submit" class="btn">Verificar Email</button>
+            </form>
+        </div>
+
+        <!-- PASO 2: Verificar Usuario -->
+        <div class="step" id="step2">
+            <h3>Paso 2: Confirmar tu identidad</h3>
+            <form id="verifyUserForm">
+                <div class="form-group">
+                    <label for="nombre_usuario">Nombre de Usuario:</label>
+                    <input type="text" id="nombre_usuario" name="nombre_usuario" required>
+                    <small style="color: #666;">Ingresa tu nombre de usuario exacto</small>
+                </div>
+                <button type="submit" class="btn">Verificar Usuario</button>
+                <button type="button" class="btn btn-secondary" onclick="showHint()">¿No recuerdas tu usuario?</button>
+            </form>
+        </div>
+
+        <!-- PASO 3: Nueva Contraseña -->
+        <div class="step" id="step3">
+            <h3>Paso 3: Nueva contraseña</h3>
+            <form id="resetPasswordForm">
+                <div class="form-group">
+                    <label for="nuevaContrasena">Nueva Contraseña:</label>
+                    <input type="password" id="nuevaContrasena" name="nuevaContrasena" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="confirmarContrasena">Confirmar Contraseña:</label>
+                    <input type="password" id="confirmarContrasena" name="confirmarContrasena" required minlength="6">
+                </div>
+                <button type="submit" class="btn">Cambiar Contraseña</button>
+            </form>
+        </div>
+
+        <div class="back-to-login">
+            <a href="/index.html">← Volver al Login</a>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api/auth';
+        let userEmail = '';
+        let userName = '';
+        let userId = '';
+
+        // Mostrar mensaje
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `<div class="message ${type}">${message}</div>`;
+        }
+
+        // Cambiar paso
+        function goToStep(step) {
+            // Ocultar todos los pasos
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            
+            // Mostrar paso actual
+            document.getElementById(`step${step}`).classList.add('active');
+            
+            // Actualizar indicadores
+            for (let i = 1; i <= 3; i++) {
+                const dot = document.getElementById(`dot${i}`);
+                dot.classList.remove('active', 'completed');
+                
+                if (i < step) {
+                    dot.classList.add('completed');
+                } else if (i === step) {
+                    dot.classList.add('active');
+                }
+            }
+        }
+
+        // PASO 1: Verificar Email
+        document.getElementById('checkEmailForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/check-email`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email })
+                });
+
+                const data = await response.json();
+                
+                if (data.success && data.exists) {
+                    userEmail = email;
+                    showMessage('✅ Email verificado correctamente', 'success');
+                    setTimeout(() => goToStep(2), 1000);
+                } else {
+                    showMessage('❌ Email no encontrado en el sistema', 'error');
+                }
+                
+            } catch (error) {
+                showMessage('❌ Error de conexión', 'error');
+            }
+        });
+
+        // Mostrar pista de usuario
+        async function showHint() {
+            try {
+                const response = await fetch(`${API_BASE}/get-hint`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email: userEmail })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage(`💡 ${data.hint}`, 'info');
+                } else {
+                    showMessage('❌ No se pudo obtener la pista', 'error');
+                }
+                
+            } catch (error) {
+                showMessage('❌ Error de conexión', 'error');
+            }
+        }
+
+        // PASO 2: Verificar Usuario
+        document.getElementById('verifyUserForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const nombre_usuario = document.getElementById('nombre_usuario').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/forgot-password`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        email: userEmail,
+                        nombre_usuario 
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    userName = nombre_usuario;
+                    userId = data.userId;
+                    showMessage('✅ Usuario verificado correctamente', 'success');
+                    setTimeout(() => goToStep(3), 1000);
+                } else {
+                    showMessage(`❌ ${data.error}`, 'error');
+                }
+                
+            } catch (error) {
+                showMessage('❌ Error de conexión', 'error');
+            }
+        });
+
+        // PASO 3: Cambiar Contraseña
+        document.getElementById('resetPasswordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const nuevaContrasena = document.getElementById('nuevaContrasena').value;
+            const confirmarContrasena = document.getElementById('confirmarContrasena').value;
+            
+            if (nuevaContrasena !== confirmarContrasena) {
+                showMessage('❌ Las contraseñas no coinciden', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/reset-password`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        userId,
+                        email: userEmail,
+                        nombre_usuario: userName,
+                        nuevaContrasena,
+                        confirmarContrasena
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage('🎉 Contraseña cambiada exitosamente. Redirigiendo al login...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/index.html';
+                    }, 2000);
+                } else {
+                    showMessage(`❌ ${data.error}`, 'error');
+                }
+                
+            } catch (error) {
+                showMessage('❌ Error de conexión', 'error');
+            }
+        });
+    </script>
+</body>
+</html>

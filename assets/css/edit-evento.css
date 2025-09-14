@@ -1,0 +1,57 @@
+body {
+  font-family: sans-serif;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+.campo {
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.campo label {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.campo input[type="text"],
+.campo input[type="number"],
+.campo input[type="datetime-local"],
+.campo textarea,
+.campo select {
+  padding: 8px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.campo input[type="checkbox"] {
+  width: auto;
+  margin-right: 8px;
+}
+
+#btnGuardar,
+#btnCancelar {
+  margin-top: 24px;
+  margin-right: 8px;
+  padding: 8px 16px;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#btnGuardar {
+  background: #28a745;
+}
+
+#btnCancelar {
+  background: #dc3545;
+}

@@ -1,0 +1,943 @@
+<!-- Scripts de animaciones y funcionalidad -->
+  <script>
+    // Variables globales para el manejo de imágenes
+    let selectedImages = [];
+
+    // Animación de entrada progresiva
+    document.addEventListener('DOMContentLoaded', function() {
+      const fieldGroups = document.querySelectorAll('.field-group');
+      fieldGroups.forEach((group, index) => {
+        group.style.opacity = '0';
+        group.style.transform = 'translateX(-30px)';
+        
+        setTimeout(() => {
+          group.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+          group.style.opacity = '1';
+          group.style.transform = 'translateX(0)';
+        }, index * 100);
+      });
+
+      // Configurar el manejo de imágenes inmediatamente
+      setupImageHandling();
+    });
+
+    // Configuración del manejo de imágenes
+    function setupImageHandling() {
+      const fileInput = document.getElementById('imagenes');
+      const previewContainer = document.getElementById('imagePreviewContainer');
+      const fileInputLabel = document.querySelector('.file-input-professional');
+
+      // Evento de cambio en el input de archivos
+      fileInput.addEventListener('change', function(e) {
+        handleFileSelection(e.target.files);
+      });
+
+      // Drag and drop
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        fileInputLabel.addEventListener(eventName, preventDefaults, false);
+      });
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+        fileInputLabel.addEventListener(eventName, highlight, false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        fileInputLabel.addEventListener(eventName, unhighlight, false);
+      });
+
+      fileInputLabel.addEventListener('drop', function(e) {
+        handleFileSelection(e.dataTransfer.files);
+      }, false);
+    }
+
+    // Manejar selección de archivos
+    function handleFileSelection(files) {
+      const filesArray = Array.from(files);
+      const previewContainer = document.getElementById('imagePreviewContainer');
+      
+      if (filesArray.length > 0) {
+        selectedImages = filesArray;
+        showImagePreviews(filesArray);
+        previewContainer.style.display = 'grid';
+      } else {
+        previewContainer.style.display = 'none';
+        selectedImages = [];
+      }
+    }
+
+    // Mostrar previews de imágenes
+    function showImagePreviews(files) {
+      const previewContainer = document.getElementById('imagePreviewContainer');
+      previewContainer.innerHTML = '';
+      
+      files.forEach((file, index) => {
+        // Verificar que sea una imagen
+        if (file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          
+          reader.onload = function(e) {
+            const imagePreview = document.createElement('div');
+            imagePreview.className = 'image-preview';
+            imagePreview.innerHTML = `
+              <img src="${e.target.result}" alt="Preview ${index + 1}" style="width: 100%; height: 100%; object-fit: cover;">
+              <button type="button" class="remove-btn" onclick="removeImage(${index})" title="Eliminar imagen">×</button>
+            `;
+            previewContainer.appendChild(imagePreview);
+          };
+          
+          reader.onerror = function() {
+            console.error('Error al leer el archivo:', file.name);
+          };
+          
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
+    // Función para remover imagen
+    function removeImage(index) {
+      selectedImages.splice(index, 1);
+      
+      // Crear un nuevo FileList con las imágenes restantes
+      const dt = new DataTransfer();
+      selectedImages.forEach(file => dt.items.add(file));
+      document.getElementById('imagenes').files = dt.files;
+      
+      // Actualizar preview
+      if (selectedImages.length > 0) {
+        showImagePreviews(selectedImages);
+      } else {
+        document.getElementById('imagePreviewContainer').style.display = 'none';
+      }
+    }
+
+    // Funciones de drag and drop
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    function highlight() {
+      const fileInput = document.querySelector('.file-input-professional');
+      fileInput.style.borderColor = 'var(--primary-green)';
+      fileInput.style.background = 'linear-gradient(135deg, rgba(116, 166, 41, 0.1) 0%, rgba(136, 191, 54, 0.05) 100%)';
+      fileInput.style.transform = 'translateY(-4px) scale(1.02)';
+    }
+
+    function unhighlight() {
+      const fileInput = document.querySelector('.file-input-professional');
+      fileInput.style.borderColor = 'var(--secondary-teal)';
+      fileInput.style.background = 'linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.8) 100%)';
+      fileInput.style.transform = 'translateY(0) scale(1)';
+    }
+
+    // Efectos de foco mejorados
+    document.querySelectorAll('.professional-input, .professional-textarea, .professional-select').forEach(input => {
+      input.addEventListener('focus', function() {
+        this.style.transform = 'translateY(-2px) scale(1.01)';
+      });
+      
+      input.addEventListener('blur', function() {
+        this.style.transform = 'translateY(0) scale(1)';
+      });
+    });
+  </script><!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>UNI2 • Editar evento</title>
+
+  <!-- Tailwind (o tu build local) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <style>
+    :root {
+      --primary-blue: #145873;
+      --secondary-teal: #24A6A6;
+      --primary-green: #74A629;
+      --light-green: #88BF36;
+      --dark: #0D0D0D;
+      --white: #ffffff;
+      --light-gray: #f8f9fa;
+      --border-gray: #e4e6ea;
+    }
+
+    #map { height: 280px; }
+
+    /* Animaciones profesionales */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(116, 166, 41, 0.4);
+      }
+      50% {
+        box-shadow: 0 0 0 8px rgba(116, 166, 41, 0);
+      }
+    }
+
+    body {
+      background: #f8fafc;
+      font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(20, 88, 115, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(36, 166, 166, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(116, 166, 41, 0.05) 0%, transparent 50%);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* Partículas flotantes */
+    .floating-particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: var(--secondary-teal);
+      border-radius: 50%;
+      opacity: 0.3;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+    .particle:nth-child(2) { left: 20%; animation-delay: 1s; }
+    .particle:nth-child(3) { left: 30%; animation-delay: 2s; }
+    .particle:nth-child(4) { left: 40%; animation-delay: 3s; }
+    .particle:nth-child(5) { left: 50%; animation-delay: 4s; }
+    .particle:nth-child(6) { left: 60%; animation-delay: 5s; }
+    .particle:nth-child(7) { left: 70%; animation-delay: 1.5s; }
+    .particle:nth-child(8) { left: 80%; animation-delay: 2.5s; }
+    .particle:nth-child(9) { left: 90%; animation-delay: 3.5s; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.3; }
+      90% { opacity: 0.3; }
+      50% { transform: translateY(50vh) rotate(180deg); opacity: 0.6; }
+    }
+
+    /* Header profesional mejorado */
+    .header-professional {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(20, 88, 115, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .header-professional::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary-blue), var(--secondary-teal), var(--primary-green));
+      background-size: 200% 200%;
+      animation: gradientShift 3s ease infinite;
+    }
+
+    .back-btn-professional {
+      background: linear-gradient(135deg, var(--secondary-teal), var(--primary-blue));
+      border: none;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      height: 40px;
+      width: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 15px rgba(20, 88, 115, 0.2);
+    }
+
+    .back-btn-professional:hover {
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 6px 20px rgba(20, 88, 115, 0.3);
+    }
+
+    /* Formulario profesional mejorado */
+    .form-container {
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(20px);
+      border-radius: 28px;
+      box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(20, 88, 115, 0.1);
+      animation: fadeInUp 0.8s ease-out;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .form-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, var(--primary-blue), var(--secondary-teal), var(--primary-green));
+      background-size: 200% 200%;
+      animation: gradientShift 4s ease infinite;
+    }
+
+    .form-container::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(36, 166, 166, 0.03) 0%, transparent 70%);
+      animation: rotate 20s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Grupos de campos */
+    .field-group {
+      margin-bottom: 24px;
+      animation: slideIn 0.6s ease-out;
+    }
+
+    .field-group:nth-child(1) { animation-delay: 0.1s; }
+    .field-group:nth-child(2) { animation-delay: 0.2s; }
+    .field-group:nth-child(3) { animation-delay: 0.3s; }
+    .field-group:nth-child(4) { animation-delay: 0.4s; }
+    .field-group:nth-child(5) { animation-delay: 0.5s; }
+    .field-group:nth-child(6) { animation-delay: 0.6s; }
+    .field-group:nth-child(7) { animation-delay: 0.7s; }
+    .field-group:nth-child(8) { animation-delay: 0.8s; }
+
+    /* Labels profesionales */
+    .professional-label {
+      color: var(--dark);
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .label-icon {
+      width: 16px;
+      height: 16px;
+      fill: var(--secondary-teal);
+    }
+
+    /* Inputs profesionales mejorados */
+    .professional-input {
+      width: 100%;
+      padding: 16px 20px;
+      border: 2px solid rgba(20, 88, 115, 0.15);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--dark);
+      font-size: 15px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      position: relative;
+    }
+
+    .professional-input:focus {
+      outline: none;
+      border-color: var(--secondary-teal);
+      background: white;
+      box-shadow: 
+        0 0 0 4px rgba(36, 166, 166, 0.1),
+        0 8px 25px rgba(36, 166, 166, 0.15);
+      transform: translateY(-2px) scale(1.01);
+    }
+
+    .professional-textarea {
+      width: 100%;
+      padding: 16px 20px;
+      border: 2px solid rgba(20, 88, 115, 0.15);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--dark);
+      font-size: 15px;
+      min-height: 140px;
+      resize: vertical;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
+
+    .professional-textarea:focus {
+      outline: none;
+      border-color: var(--secondary-teal);
+      background: white;
+      box-shadow: 
+        0 0 0 4px rgba(36, 166, 166, 0.1),
+        0 8px 25px rgba(36, 166, 166, 0.15);
+      transform: translateY(-2px) scale(1.01);
+    }
+
+    .professional-select {
+      width: 100%;
+      padding: 16px 20px;
+      border: 2px solid rgba(20, 88, 115, 0.15);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--dark);
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+      background-position: right 12px center;
+      background-repeat: no-repeat;
+      background-size: 16px;
+      padding-right: 48px;
+    }
+
+    .professional-select:focus {
+      outline: none;
+      border-color: var(--secondary-teal);
+      background-color: white;
+      box-shadow: 
+        0 0 0 4px rgba(36, 166, 166, 0.1),
+        0 8px 25px rgba(36, 166, 166, 0.15);
+      transform: translateY(-2px) scale(1.01);
+    }
+
+    /* File input profesional mejorado */
+    .file-input-professional {
+      position: relative;
+      display: block;
+      width: 100%;
+      padding: 32px 20px;
+      border: 3px dashed var(--secondary-teal);
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.8) 100%);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+    }
+
+    .file-input-professional::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(36, 166, 166, 0.1), transparent);
+      transition: left 0.6s ease;
+    }
+
+    .file-input-professional:hover::before {
+      left: 100%;
+    }
+
+    .file-input-professional:hover {
+      border-color: var(--primary-green);
+      background: linear-gradient(135deg, rgba(116, 166, 41, 0.1) 0%, rgba(136, 191, 54, 0.05) 100%);
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 12px 40px rgba(36, 166, 166, 0.2);
+    }
+
+    .file-input-professional input[type="file"] {
+      position: absolute;
+      left: -9999px;
+    }
+
+    /* Preview de imágenes */
+    .image-preview-container {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 16px;
+      max-height: 300px;
+      overflow-y: auto;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 12px;
+      border: 1px solid rgba(20, 88, 115, 0.1);
+    }
+
+    .image-preview {
+      position: relative;
+      width: 100%;
+      height: 120px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      animation: fadeInScale 0.5s ease-out;
+    }
+
+    .image-preview:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .image-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .image-preview .remove-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 24px;
+      height: 24px;
+      background: rgba(239, 68, 68, 0.9);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .image-preview .remove-btn:hover {
+      background: #dc2626;
+      transform: scale(1.1);
+    }
+
+    @keyframes fadeInScale {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    /* Botones profesionales */
+    .btn-primary-professional {
+      background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+      border: none;
+      border-radius: 12px;
+      color: white;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 14px 28px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 15px rgba(116, 166, 41, 0.3);
+    }
+
+    .btn-primary-professional::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .btn-primary-professional:hover::before {
+      left: 100%;
+    }
+
+    .btn-primary-professional:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 6px 20px rgba(116, 166, 41, 0.4);
+      animation: pulse 2s infinite;
+    }
+
+    .btn-secondary-professional {
+      background: rgba(255, 255, 255, 0.9);
+      border: 2px solid rgba(20, 88, 115, 0.2);
+      border-radius: 12px;
+      color: var(--dark);
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 12px 28px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-secondary-professional:hover {
+      background: rgba(20, 88, 115, 0.1);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(20, 88, 115, 0.2);
+    }
+
+    /* Checkbox profesional */
+    .checkbox-professional {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      transition: background-color 0.3s ease;
+    }
+
+    .checkbox-professional:hover {
+      background: rgba(36, 166, 166, 0.05);
+    }
+
+    .checkbox-professional input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--secondary-teal);
+      border-radius: 4px;
+      background: white;
+      cursor: pointer;
+    }
+
+    /* Notificación profesional */
+    .notification-professional {
+      background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+      border-radius: 12px;
+      color: white;
+      padding: 16px 20px;
+      box-shadow: 0 8px 25px rgba(116, 166, 41, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Mapa profesional */
+    .map-container {
+      border-radius: 16px;
+      overflow: hidden;
+      border: 3px solid var(--secondary-teal);
+      box-shadow: 0 8px 25px rgba(36, 166, 166, 0.2);
+    }
+
+    /* Grid responsivo */
+    .grid-responsive {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    @media (max-width: 768px) {
+      .grid-2, .grid-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Cabecera profesional -->
+  <header class="header-professional">
+    <div class="max-w-4xl mx-auto flex items-center gap-4 px-6 py-4">
+      <button id="btnBack" class="back-btn-professional">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+        </svg>
+      </button>
+      <h1 class="font-bold text-xl text-gray-800 flex-1">Editar evento</h1>
+    </div>
+  </header>
+
+  <!-- Formulario -->
+  <main class="max-w-4xl mx-auto p-6">
+    <!-- Notificación -->
+    <div id="notificacion" class="fixed top-4 right-4 z-50 opacity-0 transition-opacity duration-300">
+      <div class="notification-professional">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        <span id="noti-text"></span>
+      </div>
+    </div>
+
+    <form id="formEditarEvento" class="form-container p-8 space-y-8" enctype="multipart/form-data">
+      <!-- Título -->
+      <div class="field-group">
+        <label for="titulo" class="professional-label">
+          <svg class="label-icon" viewBox="0 0 24 24">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+          Título del evento
+        </label>
+        <input id="titulo" name="titulo" required class="professional-input" placeholder="Ingrese el título del evento">
+      </div>
+
+      <!-- Imágenes -->
+      <div class="field-group">
+        <label class="professional-label">
+          <svg class="label-icon" viewBox="0 0 24 24">
+            <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+          </svg>
+          Imágenes promocionales
+        </label>
+        <label for="imagenes" class="file-input-professional">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="var(--secondary-teal)" style="margin: 0 auto 16px;">
+            <path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/>
+          </svg>
+          <div style="color: var(--dark); font-weight: 700; margin-bottom: 8px; font-size: 18px;">Seleccionar imágenes</div>
+          <div style="color: #6b7280; font-size: 15px;">Arrastra archivos aquí o haz clic para seleccionar</div>
+          <input id="imagenes" name="nuevasImagenes" type="file" accept="image/*" multiple>
+        </label>
+        <div id="imagePreviewContainer" class="image-preview-container" style="display: none;"></div>
+      </div>
+
+      <!-- Descripción -->
+      <div class="field-group">
+        <label for="descripcion" class="professional-label">
+          <svg class="label-icon" viewBox="0 0 24 24">
+            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+          </svg>
+          Descripción del evento
+        </label>
+        <textarea id="descripcion" name="descripcion" class="professional-textarea" placeholder="Describe tu evento..."></textarea>
+      </div>
+
+      <!-- Fechas -->
+      <div class="field-group">
+        <label class="professional-label">
+          <svg class="label-icon" viewBox="0 0 24 24">
+            <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+          </svg>
+          Fechas del evento
+        </label>
+        <div class="grid-responsive grid-3">
+          <div>
+            <label for="fechaInicio" class="block text-sm font-medium mb-2 text-gray-600">Inicio *</label>
+            <input id="fechaInicio" name="fechaInicio" type="datetime-local" required class="professional-input">
+          </div>
+          <div>
+            <label for="fechaFinal" class="block text-sm font-medium mb-2 text-gray-600">Final</label>
+            <input id="fechaFinal" name="fechaFinal" type="datetime-local" class="professional-input">
+          </div>
+          <div>
+            <label for="fechaLimiteInscripcion" class="block text-sm font-medium mb-2 text-gray-600">Límite inscripción</label>
+            <input id="fechaLimiteInscripcion" name="fechaLimiteInscripcion" type="datetime-local" class="professional-input">
+          </div>
+        </div>
+      </div>
+
+      <!-- Mapa -->
+      <div class="field-group">
+        <label class="professional-label">
+          <svg class="label-icon" viewBox="0 0 24 24">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+          </svg>
+          Ubicación del evento
+        </label>
+        <div id="map" class="map-container"></div>
+        <input type="hidden" id="lat" name="locacion[lat]">
+        <input type="hidden" id="lng" name="locacion[lng]">
+      </div>
+
+      <!-- Dirección / ciudad -->
+      <div class="field-group">
+        <div class="grid-responsive grid-2">
+          <div>
+            <label for="direccion" class="professional-label">
+              <svg class="label-icon" viewBox="0 0 24 24">
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+              </svg>
+              Dirección
+            </label>
+            <input id="direccion" name="locacion[direccion]" class="professional-input" placeholder="Dirección del evento">
+          </div>
+          <div>
+            <label for="ciudad" class="professional-label">
+              <svg class="label-icon" viewBox="0 0 24 24">
+                <path d="M15 11V5l-3-3-3 3v2H3v14h18V11h-6zm-8 8H5v-2h2v2zm0-4H5v-2h2v2zm0-4H5V9h2v2zm6 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V9h2v2zm0-4h-2V5h2v2zm6 12h-2v-2h2v2zm0-4h-2v-2h2v2z"/>
+              </svg>
+              Ciudad
+            </label>
+            <input id="ciudad" name="locacion[ciudad]" class="professional-input" placeholder="Ciudad del evento">
+          </div>
+        </div>
+      </div>
+
+      <!-- Tipo, capacidad, estado, inscripción -->
+      <div class="field-group">
+        <div class="grid-responsive grid-2">
+          <div>
+            <label for="tipoEvento" class="professional-label">
+              <svg class="label-icon" viewBox="0 0 24 24">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+              Tipo de evento
+            </label>
+            <select id="tipoEvento" name="tipoEvento" required class="professional-select">
+              <option value="conferencia">Conferencia</option>
+              <option value="taller">Taller</option>
+              <option value="seminario">Seminario</option>
+              <option value="capacitacion">Capacitación</option>
+              <option value="voluntariado">Voluntariado</option>
+              <option value="fundraising">Recaudación de fondos</option>
+              <option value="cultural">Cultural</option>
+              <option value="deportivo">Deportivo</option>
+              <option value="otro">Otro</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="capacidadMaxima" class="professional-label">
+              <svg class="label-icon" viewBox="0 0 24 24">
+                <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A1.5 1.5 0 0 0 18.54 8H17c-.8 0-1.5.7-1.5 1.5v8c0 .83.67 1.5 1.5 1.5h1v3h2zm-12.5 0c.83 0 1.5-.67 1.5-1.5v-9c0-.83-.67-1.5-1.5-1.5S6 10.67 6 11.5v9c0 .83.67 1.5 1.5 1.5zm3-16C10.5 3.78 8.22 2 5.5 2S.5 3.78.5 6s2.28 4 5 4 5-1.78 5-4z"/>
+              </svg>
+              Capacidad máxima
+            </label>
+            <input id="capacidadMaxima" name="capacidadMaxima" type="number" min="1" class="professional-input" placeholder="Número de participantes">
+          </div>
+
+          <div>
+            <label for="estado" class="professional-label">
+              <svg class="label-icon" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+              Estado del evento
+            </label>
+            <select id="estado" name="estado" required class="professional-select">
+              <option value="borrador">Borrador</option>
+              <option value="publicado">Publicado</option>
+              <option value="en_curso">En curso</option>
+              <option value="finalizado">Finalizado</option>
+              <option value="suspendido">Suspendido</option>
+              <option value="cancelado">Cancelado</option>
+            </select>
+          </div>
+
+          <div class="flex items-end">
+            <div class="checkbox-professional">
+              <input id="inscripcionAbierta" name="inscripcionAbierta" type="checkbox" class="h-5 w-5 text-cyan-600 rounded border-gray-300 focus:ring-cyan-500">
+              <label for="inscripcionAbierta" class="text-sm font-medium text-gray-700">Inscripción abierta</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botones -->
+      <div class="field-group">
+        <div class="flex flex-wrap gap-4 justify-end">
+          <button id="btnCancelar" type="button" class="btn-secondary-professional">
+            Cancelar
+          </button>
+          <button id="btnGuardar" type="submit" class="btn-primary-professional">
+            Guardar cambios
+          </button>
+        </div>
+      </div>
+    </form>
+  </main>
+
+  <!-- Leaflet & lógica -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="../../assets/js/config.js"></script>
+  <script defer src="../../scripts/events/edit-event.js"></script>
+
+  <!-- Scripts de animaciones -->
+  <script>
+    // Animación de entrada progresiva
+    document.addEventListener('DOMContentLoaded', function() {
+      const fieldGroups = document.querySelectorAll('.field-group');
+      fieldGroups.forEach((group, index) => {
+        group.style.opacity = '0';
+        group.style.transform = 'translateX(-30px)';
+        
+        setTimeout(() => {
+          group.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+          group.style.opacity = '1';
+          group.style.transform = 'translateX(0)';
+        }, index * 100);
+      });
+    });
+
+    // Efectos de foco mejorados
+    document.querySelectorAll('.professional-input, .professional-textarea, .professional-select').forEach(input => {
+      input.addEventListener('focus', function() {
+        this.style.transform = 'translateY(-1px)';
+      });
+      
+      input.addEventListener('blur', function() {
+        this.style.transform = 'translateY(0)';
+      });
+    });
+  </script>
+</body>
+</html>

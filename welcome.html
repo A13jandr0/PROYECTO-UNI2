@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNI2 - Conectando Empresas con Causas Sociales</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'azul-marino': '#0F4C81',
+                        'verde-lima': '#7AC943',
+                        'turquesa': '#00B2A9',
+                        'azul-oscuro': '#1A4779',
+                        'azul-profundo': '#1E3A5F'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+       
+        .gradient-bg {
+            background: linear-gradient(135deg, #1A4779 0%, #0F4C81 100%);
+        }
+       
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+       
+        .card-hover:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+       
+        .floating-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+       
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+       
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+       
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 overflow-x-hidden">
+    <!-- Header -->
+    <header class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <!-- Reemplaza esto con tu logo -->
+                    <img src="assets/img/UNI2.png"UNI2 Logo class="h-12">
+                    <h1 class="text-2xl font-bold text-azul-profundo">UNI2</h1>
+                </div>
+               
+                <div class="flex items-center space-x-4">
+                    <a href="index.html" class="text-gray-600 hover:text-azul-marino transition-colors px-4 py-2 rounded-lg hover:bg-gray-100">
+                        Iniciar Sesión
+                        </a>
+
+                    <div class="relative">
+                    <button onclick="toggleDropdown()" class="bg-verde-lima text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all hover:bg-opacity-90">
+                        Registrarse
+                    </button>
+                    <div id="registroDropdown" class="hidden absolute right-0 mt-2 w-56 bg-white border rounded-lg shadow-lg z-50">
+                        <a href="pages/auth/register-empresa.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Como Empresa</a>
+                        <a href="pages/auth/register-user-ext.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Como Usuario</a>
+                        <a href="pages/auth/register-ong.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Como ONG</a>
+                    </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </header>
+ 
+    <!-- Hero Section -->
+    <section class="gradient-bg text-white py-20 relative overflow-hidden">
+        <div class="absolute inset-0 bg-black opacity-10"></div>
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="text-center max-w-4xl mx-auto">
+                <h2 class="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+                    <span class="text-verde-lima">Empresas que Transforman</span> el Mundo
+                </h2>
+                <p class="text-xl md:text-2xl mb-8 opacity-90 leading-relaxed">
+                    Conectamos tu marca con las mejores causas sociales. Aumenta tu impacto en la comunidad mientras fortaleces tu imagen corporativa.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button class="bg-white text-azul-marino px-8 py-4 rounded-xl text-lg font-semibold hover:bg-gray-100 transition-all shadow-lg">
+                        Ser Auspiciador
+                    </button>
+                    <button class="border-2 border-white text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white hover:text-azul-marino transition-all">
+                        Ver Casos de Éxito
+                    </button>
+                </div>
+            </div>
+        </div>
+       
+        <!-- Floating elements -->
+        <div class="absolute top-20 left-10 w-20 h-20 bg-white bg-opacity-10 rounded-full floating-animation"></div>
+        <div class="absolute bottom-20 right-10 w-16 h-16 bg-verde-lima bg-opacity-20 rounded-full floating-animation" style="animation-delay: -2s;"></div>
+        <div class="absolute top-1/2 left-1/4 w-12 h-12 bg-turquesa bg-opacity-15 rounded-full floating-animation" style="animation-delay: -4s;"></div>
+    </section>
+ 
+    <!-- Features Section -->
+    <section class="py-20 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h3 class="text-4xl font-bold text-azul-profundo mb-4">Beneficios para Empresas</h3>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Potencia tu responsabilidad social empresarial con nuestras soluciones integrales
+                </p>
+            </div>
+           
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 card-hover">
+                    <div class="w-16 h-16 bg-azul-marino rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                        </svg>
+                    </div>
+                    <h4 class="text-2xl font-bold text-azul-profundo mb-4">Visibilidad de Marca</h4>
+                    <p class="text-gray-600 leading-relaxed">
+                        Posiciona tu empresa como líder en responsabilidad social con exposición en nuestros eventos y plataforma.
+                    </p>
+                </div>
+ 
+                <!-- Card 2 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 card-hover">
+                    <div class="w-16 h-16 bg-turquesa rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                    </div>
+                    <h4 class="text-2xl font-bold text-azul-profundo mb-4">Conexión Directa</h4>
+                    <p class="text-gray-600 leading-relaxed">
+                        Acceso privilegiado a fundaciones y organizaciones sociales que necesitan tu apoyo.
+                    </p>
+                </div>
+ 
+                <!-- Card 3 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 card-hover">
+                    <div class="w-16 h-16 bg-verde-lima rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <h4 class="text-2xl font-bold text-azul-profundo mb-4">Reportes de Impacto</h4>
+                    <p class="text-gray-600 leading-relaxed">
+                        Métricas claras del impacto social generado por tu inversión, ideal para reportes RSE.
+                    </p>
+                </div>
+ 
+                <!-- Card 4 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 card-hover">
+                    <div class="w-16 h-16 bg-azul-oscuro rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path>
+                        </svg>
+                    </div>
+                    <h4 class="text-2xl font-bold text-azul-profundo mb-4">Paquetes Personalizados</h4>
+                    <p class="text-gray-600 leading-relaxed">
+                        Soluciones a medida según tus objetivos de marketing social y presupuesto.
+                    </p>
+                </div>
+ 
+                <!-- Card 5 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 card-hover">
+                    <div class="w-16 h-16 bg-turquesa rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h4 class="text-2xl font-bold text-azul-profundo mb-4">Certificación Social</h4>
+                    <p class="text-gray-600 leading-relaxed">
+                        Recibe reconocimientos y certificados que validan tu compromiso con la comunidad.
+                    </p>
+                </div>
+ 
+                <!-- Card 6 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 card-hover">
+                    <div class="w-16 h-16 bg-verde-lima rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
+                        </svg>
+                    </div>
+                    <h4 class="text-2xl font-bold text-azul-profundo mb-4">Networking Empresarial</h4>
+                    <p class="text-gray-600 leading-relaxed">
+                        Conéctate con otras empresas comprometidas y amplía tus oportunidades de negocio.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+ 
+    <!-- Stats Section -->
+    <section class="py-20 bg-gradient-to-r from-azul-profundo to-azul-oscuro text-white">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h3 class="text-4xl font-bold mb-4">Impacto en Números</h3>
+                <p class="text-xl opacity-90">Resultados tangibles de nuestra comunidad</p>
+            </div>
+           
+            <div class="grid md:grid-cols-4 gap-8 text-center">
+                <div class="pulse-animation">
+                    <div class="text-5xl font-bold text-verde-lima mb-2">120+</div>
+                    <div class="text-lg opacity-80">Empresas Aliadas</div>
+                </div>
+                <div class="pulse-animation" style="animation-delay: 0.5s;">
+                    <div class="text-5xl font-bold text-turquesa mb-2">350+</div>
+                    <div class="text-lg opacity-80">Proyectos Realizados</div>
+                </div>
+                <div class="pulse-animation" style="animation-delay: 1s;">
+                    <div class="text-5xl font-bold text-white mb-2">25K+</div>
+                    <div class="text-lg opacity-80">Personas Beneficiadas</div>
+                </div>
+                <div class="pulse-animation" style="animation-delay: 1.5s;">
+                    <div class="text-5xl font-bold text-verde-lima mb-2">5M+</div>
+                    <div class="text-lg opacity-80">Inversión Social</div>
+                </div>
+            </div>
+        </div>
+    </section>
+ 
+    <!-- Testimonials Section -->
+    <section class="py-20 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h3 class="text-4xl font-bold text-azul-profundo mb-4">Empresas que Confían en Nosotros</h3>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Descubre lo que dicen nuestros aliados corporativos
+                </p>
+            </div>
+           
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Testimonial 1 -->
+                <div class="bg-white p-8 rounded-xl shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-azul-marino rounded-full flex items-center justify-center text-white font-bold mr-4">A</div>
+                        <div>
+                            <h5 class="font-bold text-azul-profundo">Ana Martínez</h5>
+                            <p class="text-sm text-gray-500">Directora de RSE, Empresa ABC</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 italic">
+                        "Gracias a UNI2 hemos podido canalizar nuestra inversión social de manera estratégica, obteniendo mayor visibilidad y resultados medibles."
+                    </p>
+                </div>
+               
+                <!-- Testimonial 2 -->
+                <div class="bg-white p-8 rounded-xl shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-verde-lima rounded-full flex items-center justify-center text-white font-bold mr-4">C</div>
+                        <div>
+                            <h5 class="font-bold text-azul-profundo">Carlos Rojas</h5>
+                            <p class="text-sm text-gray-500">Gerente de Marketing, XYZ Corp</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 italic">
+                        "La plataforma nos ha permitido conectar con causas alineadas a nuestros valores corporativos, fortaleciendo nuestra imagen de marca."
+                    </p>
+                </div>
+               
+                <!-- Testimonial 3 -->
+                <div class="bg-white p-8 rounded-xl shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-turquesa rounded-full flex items-center justify-center text-white font-bold mr-4">M</div>
+                        <div>
+                            <h5 class="font-bold text-azul-profundo">María Fernández</h5>
+                            <p class="text-sm text-gray-500">Directora Fundación Solidaria</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 italic">
+                        "UNI2 ha sido el puente perfecto para encontrar empresas comprometidas que apoyen nuestros proyectos sociales con recursos y voluntarios."
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+ 
+    <!-- CTA Section -->
+    <section class="py-20 bg-white">
+        <div class="container mx-auto px-6 text-center">
+            <div class="max-w-4xl mx-auto">
+                <h3 class="text-4xl font-bold text-azul-profundo mb-6">¿Listo para generar impacto?</h3>
+                <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+                    Únete como empresa auspiciadora y forma parte de la red que está transformando el mundo del voluntariado y la acción social. Conecta con causas valiosas y fortalece tu responsabilidad social empresarial.
+                </p>
+               
+                <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+                    <button class="bg-verde-lima text-white px-8 py-4 rounded-xl text-lg font-semibold hover:shadow-xl transition-all transform hover:scale-105">
+                        Ser Auspiciador
+                    </button>
+                    <button class="border-2 border-azul-marino text-azul-marino px-8 py-4 rounded-xl text-lg font-semibold hover:bg-azul-marino hover:text-white transition-all">
+                        Solicitar Información
+                    </button>
+                </div>
+       
+                <div class="text-sm text-gray-500">
+                    ¿Tienes preguntas? <a href="#" class="text-azul-marino hover:underline">Contáctanos</a>
+                </div>
+            </div>
+        </div>
+    </section>
+ 
+    <!-- Footer -->
+    <footer class="bg-azul-profundo text-white py-12">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <!-- Reemplaza esto con tu logo -->
+                        <img src="assets/img/UNI2.png alt="UNI2 Logo" class="h-10">
+                        <h4 class="text-xl font-bold">UNI2</h4>
+                    </div>
+                    <p class="text-gray-400 leading-relaxed">
+                        Unidos para ayudar a quienes ayudan. Conectando empresas con causas sociales desde 2023.
+                    </p>
+                </div>
+               
+                <div>
+                    <h5 class="font-semibold mb-4">Para Empresas</h5>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Oportunidades de Auspicio</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Paquetes Corporativos</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Casos de Éxito</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Certificación RSE</a></li>
+                    </ul>
+                </div>
+               
+                <div>
+                    <h5 class="font-semibold mb-4">Recursos</h5>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Blog Corporativo</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Guía de RSE</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Soporte</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Preguntas Frecuentes</a></li>
+                    </ul>
+                </div>
+               
+                <div>
+                    <h5 class="font-semibold mb-4">Contacto</h5>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">ventas@uni2.org</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">+1 (234) 567-890</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Privacidad</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Términos</a></li>
+                    </ul>
+                </div>
+            </div>
+           
+            <div class="border-t border-azul-oscuro mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 UNI2. Todos los derechos reservados. Unidos para ayudar a quienes ayudan.</p>
+            </div>
+        </div>
+    </footer>
+ 
+    <script>
+
+        function toggleDropdown() {
+            const menu = document.getElementById('registroDropdown');
+            menu.classList.toggle('hidden');
+        }
+
+        // Cerrar el menú si se hace clic fuera
+        document.addEventListener('click', function (e) {
+            const button = document.querySelector('button[onclick="toggleDropdown()"]');
+            const menu = document.getElementById('registroDropdown');
+            if (!button.contains(e.target) && !menu.contains(e.target)) {
+            menu.classList.add('hidden');
+            }
+        });
+        // Add smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+ 
+        // Add intersection observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+ 
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+ 
+        // Observe cards for animation
+        document.querySelectorAll('.card-hover').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'all 0.6s ease';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>

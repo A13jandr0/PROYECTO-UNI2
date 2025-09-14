@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>UNI2 • Iniciar sesión Invitado</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/js/tailwind-global.js"></script>
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="font-sans min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-profundo via-brand-oscuro to-brand-marino text-white">
+  <main class="w-full max-w-md mx-4 bg-white/90 backdrop-blur-lg rounded-2xl shadow-2xl text-brand-profundo">
+    <div class="p-8">
+      <div class="flex justify-center mb-6">
+        <img src="assets/img/UNI2.png" alt="UNI2 logo" class="h-20 w-auto drop-shadow-md" />
+      </div>
+      <h1 class="text-center text-2xl font-semibold mb-8">Ingreso Invitados</h1>
+      <form id="loginInvitadoForm" class="space-y-5" novalidate>
+        <div>
+          <label for="email" class="block text-sm font-medium mb-1">Correo electrónico</label>
+          <input id="email" type="email"
+                 class="w-full rounded-lg border border-brand-marino/30 focus:ring-2 focus:ring-brand-lima focus:border-brand-lima px-3 py-2 text-brand-profundo placeholder:text-brand-profundo/40"
+                 placeholder="tú@ejemplo.com" required />
+        </div>
+        <div>
+          <label for="password" class="block text-sm font-medium mb-1">Contraseña</label>
+          <div class="relative">
+            <input id="password" type="password" minlength="6" placeholder="••••••••" required
+                   class="w-full rounded-lg border border-brand-marino/30 focus:ring-2 focus:ring-brand-lima px-3 py-2 pr-10 text-brand-profundo" />
+            <button type="button" id="togglePassword" class="absolute right-3 top-2.5 text-brand-oscuro">
+              👁️
+            </button>
+          </div>
+        </div>
+        <button type="submit"
+                class="w-full py-2.5 rounded-lg bg-brand-accent2 hover:bg-opacity-90 transition-colors font-semibold text-white shadow-lg shadow-brand-accent2/40">
+          Acceder como Invitado
+        </button>
+      </form>
+      <div id="result" class="mt-4 text-center text-sm text-red-600"></div>
+      <p class="text-center text-sm mt-6 text-brand-profundo/70">
+        ¿Eres ONG o Empresa? <a href="/pages/auth/login.html" class="font-medium underline">Ingresa aquí</a>
+      </p>
+    </div>
+  </main>
+  <script src="assets/js/config.js"></script>
+  <script src="scripts/auth/loginInvitado.js"></script>
+</body>
+</html>
